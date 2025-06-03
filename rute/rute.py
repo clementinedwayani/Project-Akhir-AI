@@ -116,9 +116,43 @@ def calculate_route(halte1_id: str, halte2_id: str) -> Dict[str, any]:
 def main():
     # Specific route calculations
     routes = [
-        ("H01", "H02"),  # Jurug to UNS
-        ("H01", "H03"),  # Jurug to Vastenburg
-    ]
+    ("H01", "H02"),  # K1
+    ("H02", "H03"),
+    ("H03", "H04"),
+    ("H04", "H05"),
+    ("H05", "H06"),
+    ("H06", "H07"),
+    ("H07", "H08"),
+    
+    ("H01", "H11"),  # FD2
+    ("H11", "H24"),
+
+    ("H06", "H07"),  # FD8 (juga ada di K1)
+    ("H07", "H19"),
+    ("H19", "H24"),
+    ("H24", "H25"),
+    ("H25", "H27"),
+
+    ("H09", "H10"),  # K3
+    ("H10", "H11"),
+    ("H11", "H12"),
+    ("H12", "H13"),
+    ("H13", "H14"),
+    ("H14", "H15"),
+
+    ("H16", "H17"),  # K4
+    ("H17", "H18"),
+
+    ("H18", "H22"),  # K6
+    ("H22", "H23"),
+
+    ("H19", "H20"),  # K5
+    ("H20", "H21"),
+
+    ("H26", "H27"),  # FD9
+
+    ("H28", "H29"),  # FD10
+]
     
     print("Route Calculations:")
     for halte1_id, halte2_id in routes:
