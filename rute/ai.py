@@ -1,3 +1,5 @@
+import networkx as nx
+import matplotlib.pyplot as plt
 import math
 import heapq
 from typing import List, Dict, Tuple, Optional, Set
@@ -68,36 +70,36 @@ class BusRouteSystem:
             {"id": "H29", "name": "Pasar Pucang Sawit A", "lat": -7.567996022, "lon": 110.8582507, "routes": ["FD10"]},
         ]
         
-        # Tourist attractions (wisata) data
+        # Tourist attractions (wisata) data with cost and operational hours
         self.wisata_data = [
-            {"id": "W01", "name": "Solo Safari", "lat": -7.564391741, "lon": 110.8586613, "halte": ["H01"]},
-            {"id": "W02", "name": "Danau UNS", "lat": -7.561172246, "lon": 110.8581931, "halte": ["H02"]},
-            {"id": "W03", "name": "Benteng Vastenburg", "lat": -7.571804006, "lon": 110.8307858, "halte": ["H03"]},
-            {"id": "W04", "name": "Kampung Wisata Batik Kauman", "lat": -7.573215566, "lon": 110.8263633, "halte": ["H04"]},
-            {"id": "W05", "name": "Pasar Triwindu", "lat": -7.568984669, "lon": 110.8225384, "halte": ["H05"]},
-            {"id": "W06", "name": "Taman Sriwedari", "lat": -7.568224905, "lon": 110.8129629, "halte": ["H06", "H07"]},
-            {"id": "W07", "name": "De Tjolomadoe", "lat": -7.533922576, "lon": 110.7498663, "halte": ["H08"]},
-            {"id": "W08", "name": "Lapangan Makamhaji", "lat": -7.5691203, "lon": 110.7831005, "halte": ["H09"]},
-            {"id": "W09", "name": "Balaikota Surakarta", "lat": -7.569192352, "lon": 110.8296584, "halte": ["H11"]},
-            {"id": "W10", "name": "Pasar Gede", "lat": -7.569143893, "lon": 110.8314553, "halte": ["H12"]},
-            {"id": "W11", "name": "Solo Techno Park", "lat": -7.555835181, "lon": 110.8538009, "halte": ["H13"]},
-            {"id": "W12", "name": "Taman Cerdas", "lat": -7.553839457, "lon": 110.8534741, "halte": ["H14"]},
-            {"id": "W13", "name": "Taman Lansia", "lat": -7.55669203, "lon": 110.8607455, "halte": ["H15"]},
-            {"id": "W14", "name": "Stadion Manahan", "lat": -7.555259829, "lon": 110.8065227, "halte": ["H17"]},
-            {"id": "W15", "name": "Taman Tirtonadi", "lat": -7.551283848, "lon": 110.8204733, "halte": ["H18"]},
-            {"id": "W16", "name": "Tumurun Private Museum", "lat": -7.570257605, "lon": 110.8164116, "halte": ["H23"]},
-            {"id": "W17", "name": "Ngarsopuro Night Market", "lat": -7.568494751, "lon": 110.822291, "halte": ["H22"]},
-            {"id": "W18", "name": "Taman Balikota Solo", "lat": -7.569219287, "lon": 110.8298679, "halte": ["H11"]},
-            {"id": "W19", "name": "Museum Radya Pustaka", "lat": -7.568292105, "lon": 110.8144969, "halte": ["H24"]},
-            {"id": "W20", "name": "Pasar Malangjiwan Colomadu", "lat": -7.531636047, "lon": 110.7472482, "halte": ["H21"]},
-            {"id": "W21", "name": "Museum Keris Nusantara", "lat": -7.568754681, "lon": 110.8107542, "halte": ["H25"]},
-            {"id": "W22", "name": "Loji Gandrung", "lat": -7.566305927, "lon": 110.8095326, "halte": ["H06"]},
-            {"id": "W23", "name": "Gedung Wayang Orang Dance Theatre", "lat": -7.56905024, "lon": 110.812558, "halte": ["H24", "H07"]},
-            {"id": "W24", "name": "House of Danar Hadi", "lat": -7.568506445, "lon": 110.8162107, "halte": ["H19"]},
-            {"id": "W25", "name": "Taman Punggawan Ngesus", "lat": -7.564517132, "lon": 110.818271, "halte": ["H27"]},
-            {"id": "W26", "name": "Pura Mangkunegaran", "lat": -7.566613944, "lon": 110.8228758, "halte": ["H26"]},
-            {"id": "W27", "name": "Pasar Klewer", "lat": -7.575178766, "lon": 110.8267555, "halte": ["H28"]},
-            {"id": "W28", "name": "Taman Sunan Jogo Kali", "lat": -7.569809858, "lon": 110.8581447, "halte": ["H29"]},
+            {"id": "W01", "name": "Solo Safari", "lat": -7.564391741, "lon": 110.8586613, "halte": ["H01"], "hours": "08:30 - 16:30", "cost": "weekday: Rp45,000 (child), Rp55,000 (adult); weekend: Rp60,000 (child), Rp75,000 (adult)"},
+            {"id": "W02", "name": "Danau UNS", "lat": -7.561172246, "lon": 110.8581931, "halte": ["H02"], "hours": "24 jam", "cost": "Free"},
+            {"id": "W03", "name": "Benteng Vastenburg", "lat": -7.571804006, "lon": 110.8307858, "halte": ["H03", "H10"], "hours": "24 jam", "cost": "Free"},
+            {"id": "W04", "name": "Kampung Wisata Batik Kauman", "lat": -7.573215566, "lon": 110.8263633, "halte": ["H04"], "hours": "09:00 - 18:00 (weekday), 08:00 - 18:00 (weekend)", "cost": "Free"},
+            {"id": "W05", "name": "Pasar Triwindu", "lat": -7.568984669, "lon": 110.8225384, "halte": ["H05"], "hours": "09:00 - 16:00", "cost": "Free"},
+            {"id": "W06", "name": "Taman Sriwedari", "lat": -7.568224905, "lon": 110.8129629, "halte": ["H06", "H07", "H20"], "hours": "24 jam", "cost": "Free"},
+            {"id": "W07", "name": "De Tjolomadoe", "lat": -7.533922576, "lon": 110.7498663, "halte": ["H08", "H16", "H21"], "hours": "09:00 - 17:00", "cost": "Rp40,000"},
+            {"id": "W08", "name": "Lapangan Makamhaji", "lat": -7.5691203, "lon": 110.7831005, "halte": ["H09"], "hours": "24 jam", "cost": "Free"},
+            {"id": "W09", "name": "Balaikota Surakarta", "lat": -7.569192352, "lon": 110.8296584, "halte": ["H11"], "hours": "24 jam", "cost": "Free"},
+            {"id": "W10", "name": "Pasar Gede", "lat": -7.569143893, "lon": 110.8314553, "halte": ["H12"], "hours": "24 jam", "cost": "Free"},
+            {"id": "W11", "name": "Solo Techno Park", "lat": -7.555835181, "lon": 110.8538009, "halte": ["H13"], "hours": "07:30 - 16:00", "cost": "Free"},
+            {"id": "W12", "name": "Taman Cerdas", "lat": -7.553839457, "lon": 110.8534741, "halte": ["H14"], "hours": "09:00 - 21:00", "cost": "Free"},
+            {"id": "W13", "name": "Taman Lansia", "lat": -7.55669203, "lon": 110.8607455, "halte": ["H15"], "hours": "24 jam", "cost": "Free"},
+            {"id": "W14", "name": "Stadion Manahan", "lat": -7.555259829, "lon": 110.8065227, "halte": ["H17"], "hours": "05:30 - 21:00", "cost": "Free"},
+            {"id": "W15", "name": "Taman Tirtonadi", "lat": -7.551283848, "lon": 110.8204733, "halte": ["H18"], "hours": "24 jam", "cost": "Free"},
+            {"id": "W16", "name": "Tumurun Private Museum", "lat": -7.570257605, "lon": 110.8164116, "halte": ["H19", "H23"], "hours": "Tue-Thu 13:00-15:00, Fri-Sun 10:00-15:00", "cost": "Rp25,000"},
+            {"id": "W17", "name": "Ngarsopuro Night Market", "lat": -7.568494751, "lon": 110.822291, "halte": ["H22"], "hours": "17:00 - 23:00", "cost": "Free"},
+            {"id": "W18", "name": "Taman Balikota Solo", "lat": -7.569219287, "lon": 110.8298679, "halte": ["H11"], "hours": "24 jam", "cost": "Free"},
+            {"id": "W19", "name": "Museum Radya Pustaka", "lat": -7.568292105, "lon": 110.8144969, "halte": ["H24"], "hours": "08:00 - 16:00", "cost": "Rp10,000 (general), Rp7,500 (student), Rp5,000 (Solo student)"},
+            {"id": "W20", "name": "Pasar Malangjiwan Colomadu", "lat": -7.531636047, "lon": 110.7472482, "halte": ["H21"], "hours": "24 jam", "cost": "Free"},
+            {"id": "W21", "name": "Museum Keris Nusantara", "lat": -7.568754681, "lon": 110.8107542, "halte": ["H25"], "hours": "08:00 - 16:00", "cost": "Rp10,000"},
+            {"id": "W22", "name": "Loji Gandrung", "lat": -7.566305927, "lon": 110.8095326, "halte": ["H06"], "hours": "08:00 - 16:00", "cost": "Rp10,000"},
+            {"id": "W23", "name": "Gedung Wayang Orang Dance Theatre", "lat": -7.56905024, "lon": 110.812558, "halte": ["H24", "H07"], "hours": "19:00 - 23:00", "cost": "Not specified"},
+            {"id": "W24", "name": "House of Danar Hadi", "lat": -7.568506445, "lon": 110.8162107, "halte": ["H19"], "hours": "09:00 - 17:00", "cost": "Rp35,000 (general), Rp15,000 (student)"},
+            {"id": "W25", "name": "Taman Punggawan Ngesus", "lat": -7.564517132, "lon": 110.818271, "halte": ["H27"], "hours": "24 jam", "cost": "Free"},
+            {"id": "W26", "name": "Pura Mangkunegaran", "lat": -7.566613944, "lon": 110.8228758, "halte": ["H26"], "hours": "09:00 - 15:00", "cost": "Rp20,000"},
+            {"id": "W27", "name": "Pasar Klewer", "lat": -7.575178766, "lon": 110.8267555, "halte": ["H28"], "hours": "24 jam", "cost": "Free"},
+            {"id": "W28", "name": "Taman Sunan Jogo Kali", "lat": -7.569809858, "lon": 110.8581447, "halte": ["H29"], "hours": "06:00 - 21:00", "cost": "Free"},
         ]
         
         # Create adjacency graph based on route connections
@@ -109,27 +111,64 @@ class BusRouteSystem:
     def _build_graph(self) -> Dict[str, List[Tuple[str, float, str]]]:
         """Build adjacency graph with connections between haltes on same routes"""
         graph = {}
-        
-        # Initialize graph
         for halte in self.halte_data:
             graph[halte["id"]] = []
-        
-        # Connect haltes that share routes
         for i, halte1 in enumerate(self.halte_data):
             for j, halte2 in enumerate(self.halte_data):
                 if i != j:
-                    # Check if they share any route
                     common_routes = set(halte1["routes"]) & set(halte2["routes"])
                     if common_routes:
                         distance = haversine(
                             halte1["lat"], halte1["lon"],
                             halte2["lat"], halte2["lon"]
                         )
-                        # Use the first common route (could be optimized to choose best route)
                         route = list(common_routes)[0]
                         graph[halte1["id"]].append((halte2["id"], distance, route))
-        
         return graph
+    
+    def visualize_route_graph(self, highlight_path: Optional[List[str]] = None):
+        """Visualize the BST route network as a graph, optionally highlighting a specific path."""
+        G = nx.Graph()
+        
+        # Add nodes (haltes)
+        for halte in self.halte_data:
+            G.add_node(halte["id"], label=halte["name"])
+        
+        # Add edges (route connections)
+        for halte_id, connections in self.graph.items():
+            for neighbor_id, distance, route in connections:
+                G.add_edge(halte_id, neighbor_id, weight=distance, route=route)
+        
+        # Draw the graph
+        plt.figure(figsize=(14, 10))
+        pos = nx.spring_layout(G, k=0.5, iterations=50)
+        
+        # Draw nodes
+        nx.draw_network_nodes(G, pos, node_color='lightblue', node_size=500)
+        
+        # Highlight nodes in the path if provided
+        if highlight_path:
+            highlight_nodes = set(highlight_path)
+            nx.draw_network_nodes(G, pos, nodelist=[n for n in G.nodes if n in highlight_nodes], 
+                                node_color='lightgreen', node_size=700)
+        
+        # Draw edges
+        edge_colors = ['gray' if not highlight_path else 'red' if (u, v) in zip(highlight_path[:-1], highlight_path[1:]) or (v, u) in zip(highlight_path[:-1], highlight_path[1:]) else 'gray' for u, v in G.edges]
+        nx.draw_network_edges(G, pos, edge_color=edge_colors)
+        
+        # Add node labels
+        node_labels = nx.get_node_attributes(G, 'label')
+        nx.draw_networkx_labels(G, pos, labels=node_labels, font_size=8)
+        
+        # Add edge labels (route names)
+        edge_labels = nx.get_edge_attributes(G, 'route')
+        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=6)
+        
+        title = "Jaringan Rute Bus Solo Trans (BST)" if not highlight_path else "Rute Terpilih Bus Solo Trans (BST)"
+        plt.title(title)
+        plt.axis('off')
+        plt.tight_layout()
+        plt.show()
     
     def heuristic(self, halte1_id: str, halte2_id: str) -> float:
         """Heuristic function: straight-line distance between two haltes"""
@@ -141,7 +180,6 @@ class BusRouteSystem:
         """A* pathfinding algorithm to find optimal route"""
         if start_id not in self.halte_dict or goal_id not in self.halte_dict:
             return None
-        
         if start_id == goal_id:
             return {
                 "path": [start_id],
@@ -150,46 +188,29 @@ class BusRouteSystem:
                 "routes": [],
                 "transfers": 0
             }
-        
-        # Priority queue for open set
         open_set = []
         heapq.heappush(open_set, Node(start_id, g_cost=0.0, h_cost=self.heuristic(start_id, goal_id)))
-        
-        # Sets to track visited nodes
         closed_set: Set[str] = set()
-        open_set_dict = {start_id: 0.0}  # Track g_costs in open set
-        
-        # Node tracking
+        open_set_dict = {start_id: 0.0}
         came_from = {}
         g_score = {start_id: 0.0}
         
         while open_set:
             current_node = heapq.heappop(open_set)
             current_id = current_node.halte_id
-            
-            # Skip if we've already processed this node with better cost
             if current_id in closed_set:
                 continue
-            
-            # Goal reached
             if current_id == goal_id:
                 return self._reconstruct_path(came_from, start_id, goal_id, g_score[goal_id])
-            
             closed_set.add(current_id)
-            
-            # Explore neighbors
             for neighbor_id, distance, route in self.graph.get(current_id, []):
                 if neighbor_id in closed_set:
                     continue
-                
                 tentative_g_score = g_score[current_id] + distance
-                
-                # If this path to neighbor is better than any previous one
                 if neighbor_id not in g_score or tentative_g_score < g_score[neighbor_id]:
                     came_from[neighbor_id] = (current_id, route, distance)
                     g_score[neighbor_id] = tentative_g_score
                     h_score = self.heuristic(neighbor_id, goal_id)
-                    
                     if neighbor_id not in open_set_dict or tentative_g_score < open_set_dict[neighbor_id]:
                         heapq.heappush(open_set, Node(
                             neighbor_id,
@@ -197,8 +218,7 @@ class BusRouteSystem:
                             h_cost=h_score
                         ))
                         open_set_dict[neighbor_id] = tentative_g_score
-        
-        return None  # No path found
+        return None
     
     def _reconstruct_path(self, came_from: Dict, start_id: str, goal_id: str, total_distance: float) -> Dict:
         """Reconstruct the optimal path from A* results"""
@@ -206,26 +226,17 @@ class BusRouteSystem:
         routes = []
         distances = []
         current = goal_id
-        
-        # Build path backwards
         while current != start_id:
             path.append(current)
             parent, route, distance = came_from[current]
             routes.append(route)
             distances.append(distance)
             current = parent
-        
         path.append(start_id)
         path.reverse()
         routes.reverse()
         distances.reverse()
-        
-        # Count transfers (route changes)
-        transfers = 0
-        for i in range(1, len(routes)):
-            if routes[i] != routes[i-1]:
-                transfers += 1
-        
+        transfers = sum(1 for i in range(1, len(routes)) if routes[i] != routes[i-1])
         return {
             "path": path,
             "path_names": [self.halte_dict[h_id]["name"] for h_id in path],
@@ -244,66 +255,47 @@ class BusRouteSystem:
         """Find the nearest tourist attraction to a given halte"""
         if halte_id not in self.halte_dict:
             return None
-        
         halte = self.halte_dict[halte_id]
         min_distance = float('inf')
         nearest_wisata = None
         nearest_wisata_id = None
-        
         for wisata in self.wisata_data:
             distance = haversine(halte["lat"], halte["lon"], wisata["lat"], wisata["lon"])
             if distance < min_distance:
                 min_distance = distance
                 nearest_wisata = wisata["name"]
                 nearest_wisata_id = wisata["id"]
-        
         return nearest_wisata_id, nearest_wisata, min_distance
     
     def get_route_to_attraction(self, start_id: str, attraction_name: str) -> Optional[Dict]:
         """Find route to a specific tourist attraction"""
-        # Find the attraction
-        attraction = None
-        for wisata in self.wisata_data:
-            if wisata["name"].lower() == attraction_name.lower():
-                attraction = wisata
-                break
-        
+        attraction = next((w for w in self.wisata_data if w["name"].lower() == attraction_name.lower()), None)
         if not attraction:
             return None
-        
-        # Find the best halte for this attraction
         best_halte = None
         min_distance = float('inf')
-        
         for halte_id in attraction["halte"]:
             if halte_id in self.halte_dict:
                 halte = self.halte_dict[halte_id]
-                distance = haversine(
-                    halte["lat"], halte["lon"],
-                    attraction["lat"], attraction["lon"]
-                )
+                distance = haversine(halte["lat"], halte["lon"], attraction["lat"], attraction["lon"])
                 if distance < min_distance:
                     min_distance = distance
                     best_halte = halte_id
-        
         if not best_halte:
             return None
-        
-        # Find route to the best halte
         route_result = self.find_route(start_id, best_halte)
         if route_result:
             route_result["destination_attraction"] = attraction["name"]
             route_result["walking_distance_to_attraction"] = min_distance
-        
+            route_result["attraction_hours"] = attraction["hours"]
+            route_result["attraction_cost"] = attraction["cost"]
         return route_result
-
+    
     def get_attractions_along_route(self, path: List[str], radius_km: float = 1.0) -> List[Dict]:
         """Find tourist attractions along the route within specified radius"""
         attractions_found = []
-        
         for halte_id in path:
             halte = self.halte_dict[halte_id]
-            
             for wisata in self.wisata_data:
                 distance = haversine(halte["lat"], halte["lon"], wisata["lat"], wisata["lon"])
                 if distance <= radius_km:
@@ -313,24 +305,18 @@ class BusRouteSystem:
                         "near_halte": halte["name"],
                         "near_halte_id": halte_id,
                         "distance_km": distance,
-                        "walking_time_min": distance * 12  # Approx 12 min per km walking
+                        "walking_time_min": distance * 12,
+                        "hours": wisata["hours"],
+                        "cost": wisata["cost"]
                     })
-        
-        # Remove duplicates and sort by distance
         seen = set()
-        unique_attractions = []
-        for attr in attractions_found:
-            if attr["attraction_id"] not in seen:
-                seen.add(attr["attraction_id"])
-                unique_attractions.append(attr)
-        
+        unique_attractions = [attr for attr in attractions_found if not (attr["attraction_id"] in seen or seen.add(attr["attraction_id"]))]
         return sorted(unique_attractions, key=lambda x: x["distance_km"])
     
     def get_route_analysis(self, route_result: Dict) -> Dict:
         """Analyze route and provide recommendations"""
         if not route_result:
             return {}
-        
         analysis = {
             "efficiency": "Unknown",
             "complexity": "Unknown",
@@ -338,8 +324,6 @@ class BusRouteSystem:
             "recommendations": [],
             "considerations": []
         }
-        
-        # Efficiency analysis
         total_time = route_result["total_time"]
         if total_time <= 15:
             analysis["efficiency"] = "Sangat Efisien"
@@ -349,8 +333,6 @@ class BusRouteSystem:
             analysis["efficiency"] = "Sedang"
         else:
             analysis["efficiency"] = "Kurang Efisien"
-        
-        # Complexity analysis
         transfers = route_result["transfers"]
         if transfers == 0:
             analysis["complexity"] = "Sangat Mudah (Langsung)"
@@ -360,32 +342,22 @@ class BusRouteSystem:
             analysis["complexity"] = "Sedang (2 Transfer)"
         else:
             analysis["complexity"] = "Rumit (3+ Transfer)"
-        
-        # Cost estimate (assuming Rp 3700 per route segment)
         analysis["cost_estimate"] = (transfers + 1) * 3700
-        
-        # Recommendations
         if transfers == 0:
             analysis["recommendations"].append("✓ Rute langsung - sangat mudah dan efisien")
         else:
             analysis["recommendations"].append(f"⚠ Memerlukan {transfers} kali transfer")
-        
         if total_time > 45:
             analysis["recommendations"].append("⚠ Perjalanan cukup lama, siapkan waktu ekstra")
-        
         if route_result["total_distance"] > 15:
             analysis["recommendations"].append("⚠ Jarak cukup jauh, pastikan kondisi fisik prima")
-        
-        # Considerations
         analysis["considerations"].extend([
-            f"Estimasi biaya: Rp {analysis['cost_estimate']:,}",
+            f"Estimasi biaya transportasi: Rp {analysis['cost_estimate']:,}",
             f"Waktu perjalanan: ~{total_time:.0f} menit",
             f"Jarak total: {route_result['total_distance']:.1f} km"
         ])
-        
         if transfers > 0:
             analysis["considerations"].append(f"Waktu tunggu transfer: ~{transfers * 5}-{transfers * 10} menit tambahan")
-        
         return analysis
 
 def display_halte_list(bus_system):
@@ -403,18 +375,13 @@ def display_attraction_list(bus_system):
     for wisata in sorted(bus_system.wisata_data, key=lambda x: x["id"]):
         halte_str = ", ".join(wisata["halte"])
         print(f"{wisata['id']}: {wisata['name']} (Dekat halte: {halte_str})")
+        print(f"  Jam Operasional: {wisata['hours']}")
+        print(f"  Biaya Masuk: {wisata['cost']}")
 
 def search_halte(bus_system, query):
     """Search for halte by name or ID"""
     query = query.lower()
-    matches = []
-    
-    for halte in bus_system.halte_data:
-        if (query in halte["id"].lower() or 
-            query in halte["name"].lower()):
-            matches.append(halte)
-    
-    return matches
+    return [halte for halte in bus_system.halte_data if query in halte["id"].lower() or query in halte["name"].lower()]
 
 def interactive_route_planner():
     """Interactive route planning system"""
@@ -431,10 +398,11 @@ def interactive_route_planner():
         print("3. Lihat Daftar Halte")
         print("4. Lihat Daftar Tempat Wisata")
         print("5. Cari Halte")
+        print("6. Visualisasi Jaringan Rute")
         print("0. Keluar")
         print("="*60)
         
-        choice = input("Pilih menu (0-5): ").strip()
+        choice = input("Pilih menu (0-6): ").strip()
         
         if choice == "0":
             print("Terima kasih telah menggunakan sistem ini! 🙏")
@@ -444,7 +412,6 @@ def interactive_route_planner():
             print("\n🗺️  PENCARIAN RUTE ANTAR HALTE")
             print("-" * 40)
             
-            # Input start halte
             start_query = input("Dari halte (ID atau nama): ").strip()
             start_matches = search_halte(bus_system, start_query)
             
@@ -464,7 +431,6 @@ def interactive_route_planner():
             else:
                 start_halte = start_matches[0]
             
-            # Input end halte
             end_query = input("Ke halte (ID atau nama): ").strip()
             end_matches = search_halte(bus_system, end_query)
             
@@ -484,7 +450,6 @@ def interactive_route_planner():
             else:
                 end_halte = end_matches[0]
             
-            # Find route
             result = bus_system.find_route(start_halte["id"], end_halte["id"])
             
             if result:
@@ -503,7 +468,6 @@ def interactive_route_planner():
                     else:
                         print(f"  {i+1}. {halte_name} → Naik Bus {route}")
                 
-                # Get route analysis
                 analysis = bus_system.get_route_analysis(result)
                 print(f"\n📊 ANALISIS RUTE:")
                 print(f"Efisiensi: {analysis['efficiency']}")
@@ -518,29 +482,30 @@ def interactive_route_planner():
                 for cons in analysis['considerations']:
                     print(f"  • {cons}")
                 
-                # Find attractions along route
                 attractions = bus_system.get_attractions_along_route(result['path'])
                 if attractions:
                     print(f"\n🏛️  TEMPAT WISATA DI SEPANJANG RUTE:")
-                    for attr in attractions[:5]:  # Show top 5
+                    for attr in attractions[:5]:
                         print(f"  • {attr['attraction']} (dekat {attr['near_halte']})")
                         print(f"    Jarak jalan kaki: {attr['distance_km']:.1f} km (~{attr['walking_time_min']:.0f} menit)")
+                        print(f"    Jam Operasional: {attr['hours']}")
+                        print(f"    Biaya Masuk: {attr['cost']}")
+                
+                # Visualize the selected route
+                print("\n📊 Menampilkan visualisasi rute terpilih...")
+                bus_system.visualize_route_graph(highlight_path=result['path'])
             else:
                 print("❌ Tidak ada rute yang ditemukan!")
         
         elif choice == "2":
             print("\n🏛️  PENCARIAN RUTE KE TEMPAT WISATA")
             print("-" * 40)
-            
-            # Show popular attractions
             print("Tempat wisata populer:")
             popular = ["Solo Safari", "Benteng Vastenburg", "Pasar Gede", "Taman Sriwedari", "Pasar Klewer"]
             for i, attraction in enumerate(popular, 1):
                 print(f"  {i}. {attraction}")
             
             attraction_name = input("Nama tempat wisata: ").strip()
-            
-            # Input start halte
             start_query = input("Dari halte (ID atau nama): ").strip()
             start_matches = search_halte(bus_system, start_query)
             
@@ -572,8 +537,9 @@ def interactive_route_planner():
                 print(f"Jarak Jalan Kaki: {result['walking_distance_to_attraction']:.1f} km")
                 print(f"Waktu Jalan Kaki: ~{result['walking_distance_to_attraction']*12:.0f} menit")
                 print(f"Transfer: {result['transfers']} kali")
+                print(f"Jam Operasional: {result['attraction_hours']}")
+                print(f"Biaya Masuk: {result['attraction_cost']}")
                 
-                # Show detailed route
                 print(f"\n📍 RUTE DETAIL:")
                 for i, (halte_name, route) in enumerate(zip(result['path_names'], result['routes'] + [''])):
                     if i == len(result['path_names']) - 1:
@@ -581,17 +547,18 @@ def interactive_route_planner():
                     else:
                         print(f"  {i+1}. {halte_name} → Naik Bus {route}")
                 
-                # Analysis
                 analysis = bus_system.get_route_analysis(result)
                 print(f"\n📊 ANALISIS:")
                 print(f"Efisiensi: {analysis['efficiency']}")
                 print(f"Kompleksitas: {analysis['complexity']}")
-                
                 total_cost = analysis['cost_estimate']
                 total_time = result['total_time'] + (result['walking_distance_to_attraction'] * 12)
-                print(f"Total Biaya: Rp {total_cost:,}")
+                print(f"Total Biaya Transportasi: Rp {total_cost:,}")
                 print(f"Total Waktu: ~{total_time:.0f} menit")
                 
+                # Visualize the selected route
+                print("\n📊 Menampilkan visualisasi rute terpilih...")
+                bus_system.visualize_route_graph(highlight_path=result['path'])
             else:
                 print("❌ Rute ke tempat wisata tidak ditemukan!")
         
@@ -606,7 +573,6 @@ def interactive_route_planner():
             print("-" * 40)
             query = input("Masukkan nama atau ID halte: ").strip()
             matches = search_halte(bus_system, query)
-            
             if matches:
                 print(f"\nDitemukan {len(matches)} halte:")
                 for halte in matches:
@@ -615,11 +581,16 @@ def interactive_route_planner():
             else:
                 print("❌ Tidak ada halte yang ditemukan!")
         
+        elif choice == "6":
+            print("\n📊 VISUALISASI JARINGAN RUTE")
+            print("-" * 40)
+            print("Menampilkan jaringan rute Bus Solo Trans...")
+            bus_system.visualize_route_graph()
+        
         else:
             print("❌ Pilihan tidak valid!")
 
 def main():
-    # Run interactive route planner
     interactive_route_planner()
 
 if __name__ == "__main__":
