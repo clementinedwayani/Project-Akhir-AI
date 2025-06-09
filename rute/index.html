@@ -1,125 +1,4983 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Graph Rute Bus Solo Trans</title>
-  <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-    }
-    #map {
-      height: 100%;
-      width: 100%;
-    }
-  </style>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_c61d4c64f92568ccd344e555c8f51b35 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
 </head>
 <body>
-  <div id="map"></div>
-
-  <script>
-    const halteData = [
-      { id: "H01", name: "Jurug (Solo Safari)", lat: -7.56513474408024, lon: 110.858685876169, routes: ["K1", "FD2"] },
-      { id: "H02", name: "UNS", lat: -7.56455236195493, lon: 110.8561722718, routes: ["K1"] },
-      { id: "H03", name: "Vastenburg", lat: -7.57175743180982, lon: 110.8297470581, routes: ["K1"] },
-      { id: "H04", name: "Gladag", lat: -7.57203341152584, lon: 110.827739168751, routes: ["K1"] },
-      { id: "H05", name: "Pasar Pon Selatan", lat: -7.57053451729552, lon: 110.822770250784, routes: ["K1"] },
-      { id: "H06", name: "Sriwedari 1 Selatan", lat: -7.56729936753916, lon: 110.812057143543, routes: ["K1", "FD8"] },
-      { id: "H07", name: "Sriwedari 2 Selatan", lat: -7.56795480396892, lon: 110.814320671231, routes: ["K1", "FD8"] },
-      { id: "H08", name: "Colomadu Utara", lat: -7.53253942382143, lon: 110.748923594566, routes: ["K1"] },
-      { id: "H09", name: "Tugu Lilin", lat: -7.567581219, lon: 110.7835961, routes: ["K3"] },
-      { id: "H10", name: "Vestenburg (Kantor Pos)", lat: -7.57140133360988, lon: 110.829647652826, routes: ["K3"] },
-      { id: "H11", name: "Balai Kota", lat: -7.56993057310902, lon: 110.830046989632, routes: ["K3", "FD2"] },
-      { id: "H12", name: "Pasar Gede", lat: -7.5684698254206, lon: 110.831727375632, routes: ["K3"] },
-      { id: "H13", name: "Solo Techno Park", lat: -7.55653679470118, lon: 110.852209973442, routes: ["K3"] },
-      { id: "H14", name: "Kantor Kecamatan Jebres", lat: -7.55541900174376, lon: 110.854977935521, routes: ["K3"] },
-      { id: "H15", name: "Halte RS Jiwa / Taman Lansia", lat: -7.55707042819373, lon: 110.860610255225, routes: ["K3"] },
-      { id: "H16", name: "Halte Kecamatan Colomadu", lat: -7.532634345, lon: 110.7487969, routes: ["K4"] },
-      { id: "H17", name: "Stadion Manahan", lat: -7.556663684, lon: 110.8048193, routes: ["K4"] },
-      { id: "H18", name: "Terminal Tirtonadi", lat: -7.551298569, lon: 110.8182099, routes: ["K4", "K6"] },
-      { id: "H19", name: "Ngapeman", lat: -7.568500872, lon: 110.8166443, routes: ["K5", "FD8"] },
-      { id: "H20", name: "Sriwedari", lat: -7.567047482, lon: 110.8118452, routes: ["K5"] },
-      { id: "H21", name: "Landasan Udara (Pasar Colomadu)", lat: -7.53171343, lon: 110.7473448, routes: ["K5", "FD7"] },
-      { id: "H22", name: "Ngarsopuro", lat: -7.569086355, lon: 110.8221284, routes: ["K6"] },
-      { id: "H23", name: "Pasar Kembang", lat: -7.571950677, lon: 110.8166645, routes: ["K6"] },
-      { id: "H24", name: "Sriwedari 2 Utara", lat: -7.567852615, lon: 110.8146095, routes: ["FD2", "FD8"] },
-      { id: "H25", name: "Museum Keris B", lat: -7.568829291, lon: 110.8106188, routes: ["FD8"] },
-      { id: "H26", name: "Mangkunegaran", lat: -7.567624751, lon: 110.8220978, routes: ["FD9"] },
-      { id: "H27", name: "Sahid", lat: -7.564166826, lon: 110.8185673, routes: ["FD8", "FD9"] },
-      { id: "H28", name: "Pasar Klewer", lat: -7.575037806, lon: 110.8264383, routes: ["FD10"] },
-      { id: "H29", name: "Pasar Pucang Sawit A", lat: -7.567996022, lon: 110.8582507, routes: ["FD10"] },
-    ];
-
-    const routeColors = {
-      "K1": "#FF6B6B",
-      "K3": "#4ECDC4",
-      "K4": "#45B7D1",
-      "K5": "#96CEB4",
-      "K6": "#FECA57",
-      "FD2": "#FF9FF3",
-      "FD7": "#54A0FF",
-      "FD8": "#5F27CD",
-      "FD9": "#00D2D3",
-      "FD10": "#FF9F43"
-    };
-
-    function getEdges(halteList) {
-      const edges = [];
-      const seen = new Set();
-      for (let i = 0; i < halteList.length; i++) {
-        for (let j = i + 1; j < halteList.length; j++) {
-          const h1 = halteList[i];
-          const h2 = halteList[j];
-          const commonRoutes = h1.routes.filter(r => h2.routes.includes(r));
-          if (commonRoutes.length > 0) {
-            const key = [h1.id, h2.id].sort().join("-");
-            if (!seen.has(key)) {
-              edges.push({
-                from: h1,
-                to: h2,
-                route: commonRoutes[0]
-              });
-              seen.add(key);
-            }
-          }
-        }
-      }
-      return edges;
-    }
-
-    function initMap() {
-      const map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 13,
-        center: { lat: -7.565, lng: 110.82 },
-      });
-
-      halteData.forEach(halte => {
-        new google.maps.Marker({
-          position: { lat: halte.lat, lng: halte.lon },
-          map: map,
-          title: halte.name
-        });
-      });
-
-      const edges = getEdges(halteData);
-      edges.forEach(edge => {
-        new google.maps.Polyline({
-          path: [
-            { lat: edge.from.lat, lng: edge.from.lon },
-            { lat: edge.to.lat, lng: edge.to.lon }
-          ],
-          geodesic: true,
-          strokeColor: routeColors[edge.route] || "#000000",
-          strokeOpacity: 0.8,
-          strokeWeight: 3,
-          map: map
-        });
-      });
-    }
-  </script>
-
-  <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNP8FHeEcVL0SpwNhN62MgymlA0Gq7bV4&callback=initMap">
-  </script>
+    
+    
+            <div style="position: fixed; bottom: 50px; left: 50px; z-index: 1000; background-color: white; 
+                        padding: 10px; border: 2px solid gray; border-radius: 5px; font-size: 12px;">
+                <b>Legenda Rute</b><br>
+            <i style="background:#FF6B6B;width:20px;height:3px;display:inline-block;"></i> Rute K1<br><i style="background:#4ECDC4;width:20px;height:3px;display:inline-block;"></i> Rute K3<br><i style="background:#45B7D1;width:20px;height:3px;display:inline-block;"></i> Rute K4<br><i style="background:#96CEB4;width:20px;height:3px;display:inline-block;"></i> Rute K5<br><i style="background:#FECA57;width:20px;height:3px;display:inline-block;"></i> Rute K6<br><i style="background:#FF9FF3;width:20px;height:3px;display:inline-block;"></i> Rute FD2<br><i style="background:#54A0FF;width:20px;height:3px;display:inline-block;"></i> Rute FD7<br><i style="background:#5F27CD;width:20px;height:3px;display:inline-block;"></i> Rute FD8<br><i style="background:#00D2D3;width:20px;height:3px;display:inline-block;"></i> Rute FD9<br><i style="background:#FF9F43;width:20px;height:3px;display:inline-block;"></i> Rute FD10<br>
+                <br><b>Simbol</b><br>
+                <i class="fa fa-bus" style="color:blue"></i> Halte<br>
+                <i class="fa fa-bus" style="color:green"></i> Halte Awal<br>
+                <i class="fa fa-bus" style="color:red"></i> Halte Akhir<br>
+                <i class="fa fa-bus" style="color:orange"></i> Halte Perantara<br>
+                <i style="background:purple;border-radius:50%;width:10px;height:10px;display:inline-block;"></i> Tempat Wisata
+            </div>
+            
+    
+            <div class="folium-map" id="map_c61d4c64f92568ccd344e555c8f51b35" ></div>
+        
 </body>
+<script>
+    
+    
+            var map_c61d4c64f92568ccd344e555c8f51b35 = L.map(
+                "map_c61d4c64f92568ccd344e555c8f51b35",
+                {
+                    center: [-7.562710964233586, 110.81897475921457],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 13,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_79b7f5a13040eb116c7050eb9edfd8c1 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_79b7f5a13040eb116c7050eb9edfd8c1.addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+            var marker_cluster_04586e53ea1867587732057ec6235c5d = L.markerClusterGroup(
+                {
+}
+            );
+        
+    
+            var marker_77488e4124b10581f74ad99266bd51e5 = L.marker(
+                [-7.56513474408024, 110.858685876169],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_edc605a673e3e444a87542f3da6afd76 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_12663f5f6dcfe7afe3b191a137db4d41 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_16fd5f4a5e66e964887479918700abf8 = $(`<div id="html_16fd5f4a5e66e964887479918700abf8" style="width: 100.0%; height: 100.0%;"><b>Jurug (Solo Safari)</b><br>ID: H01<br>Rute: K1, FD2</div>`)[0];
+                popup_12663f5f6dcfe7afe3b191a137db4d41.setContent(html_16fd5f4a5e66e964887479918700abf8);
+            
+        
+
+        marker_77488e4124b10581f74ad99266bd51e5.bindPopup(popup_12663f5f6dcfe7afe3b191a137db4d41)
+        ;
+
+        
+    
+    
+            marker_77488e4124b10581f74ad99266bd51e5.bindTooltip(
+                `<div>
+                     Jurug (Solo Safari)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_77488e4124b10581f74ad99266bd51e5.setIcon(icon_edc605a673e3e444a87542f3da6afd76);
+            
+    
+            var marker_f407439642f5752ae84b75c713d19fff = L.marker(
+                [-7.56455236195493, 110.8561722718],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_9c6762e7f7f91ce0daa42b43966ca0c1 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5a12222191890a5a999fd99d27b947bb = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_90ff80ffa024fd122d74209578806ada = $(`<div id="html_90ff80ffa024fd122d74209578806ada" style="width: 100.0%; height: 100.0%;"><b>UNS</b><br>ID: H02<br>Rute: K1</div>`)[0];
+                popup_5a12222191890a5a999fd99d27b947bb.setContent(html_90ff80ffa024fd122d74209578806ada);
+            
+        
+
+        marker_f407439642f5752ae84b75c713d19fff.bindPopup(popup_5a12222191890a5a999fd99d27b947bb)
+        ;
+
+        
+    
+    
+            marker_f407439642f5752ae84b75c713d19fff.bindTooltip(
+                `<div>
+                     UNS
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f407439642f5752ae84b75c713d19fff.setIcon(icon_9c6762e7f7f91ce0daa42b43966ca0c1);
+            
+    
+            var marker_f9f6747ae43f956309e03deddaa633d0 = L.marker(
+                [-7.57175743180982, 110.8297470581],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_117cbbab8ccce74074398f7d05afa16c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ee644fdb0fa15c85639d5efb353db69a = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_7dd0bfc429bf2027d769f268751f7cc9 = $(`<div id="html_7dd0bfc429bf2027d769f268751f7cc9" style="width: 100.0%; height: 100.0%;"><b>Vastenburg</b><br>ID: H03<br>Rute: K1</div>`)[0];
+                popup_ee644fdb0fa15c85639d5efb353db69a.setContent(html_7dd0bfc429bf2027d769f268751f7cc9);
+            
+        
+
+        marker_f9f6747ae43f956309e03deddaa633d0.bindPopup(popup_ee644fdb0fa15c85639d5efb353db69a)
+        ;
+
+        
+    
+    
+            marker_f9f6747ae43f956309e03deddaa633d0.bindTooltip(
+                `<div>
+                     Vastenburg
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_f9f6747ae43f956309e03deddaa633d0.setIcon(icon_117cbbab8ccce74074398f7d05afa16c);
+            
+    
+            var marker_09879b920e7dabedf084c9ccb9f1a63d = L.marker(
+                [-7.57203341152584, 110.827739168751],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_386ad1e8befc673e65541eb21eece8a3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6abafcda024c65ba07630aa169ae976b = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_139b4f9072c5df434b13b8b8076977c7 = $(`<div id="html_139b4f9072c5df434b13b8b8076977c7" style="width: 100.0%; height: 100.0%;"><b>Gladag</b><br>ID: H04<br>Rute: K1</div>`)[0];
+                popup_6abafcda024c65ba07630aa169ae976b.setContent(html_139b4f9072c5df434b13b8b8076977c7);
+            
+        
+
+        marker_09879b920e7dabedf084c9ccb9f1a63d.bindPopup(popup_6abafcda024c65ba07630aa169ae976b)
+        ;
+
+        
+    
+    
+            marker_09879b920e7dabedf084c9ccb9f1a63d.bindTooltip(
+                `<div>
+                     Gladag
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_09879b920e7dabedf084c9ccb9f1a63d.setIcon(icon_386ad1e8befc673e65541eb21eece8a3);
+            
+    
+            var marker_8807fa6f8ffacc3dcfdfc5dd7292dfa1 = L.marker(
+                [-7.57053451729552, 110.822770250784],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_fe68b9931b51f449b70cd3ffb9a362d7 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_92df81fdd370dc173e3b5181af9a556a = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_2527c84148c4dc131c4ac758dd1ff7bc = $(`<div id="html_2527c84148c4dc131c4ac758dd1ff7bc" style="width: 100.0%; height: 100.0%;"><b>Pasar Pon Selatan</b><br>ID: H05<br>Rute: K1</div>`)[0];
+                popup_92df81fdd370dc173e3b5181af9a556a.setContent(html_2527c84148c4dc131c4ac758dd1ff7bc);
+            
+        
+
+        marker_8807fa6f8ffacc3dcfdfc5dd7292dfa1.bindPopup(popup_92df81fdd370dc173e3b5181af9a556a)
+        ;
+
+        
+    
+    
+            marker_8807fa6f8ffacc3dcfdfc5dd7292dfa1.bindTooltip(
+                `<div>
+                     Pasar Pon Selatan
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_8807fa6f8ffacc3dcfdfc5dd7292dfa1.setIcon(icon_fe68b9931b51f449b70cd3ffb9a362d7);
+            
+    
+            var marker_e2857133f832c093b8c5356373760019 = L.marker(
+                [-7.56729936753916, 110.812057143543],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_d41df3833dd77e2fc481f84ff3de0e62 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_cda5a1de73728eb3745ad8268c656ca7 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_90bb1dddb304a1dd293d48dcb503bedc = $(`<div id="html_90bb1dddb304a1dd293d48dcb503bedc" style="width: 100.0%; height: 100.0%;"><b>Sriwedari 1 Selatan</b><br>ID: H06<br>Rute: K1, FD8</div>`)[0];
+                popup_cda5a1de73728eb3745ad8268c656ca7.setContent(html_90bb1dddb304a1dd293d48dcb503bedc);
+            
+        
+
+        marker_e2857133f832c093b8c5356373760019.bindPopup(popup_cda5a1de73728eb3745ad8268c656ca7)
+        ;
+
+        
+    
+    
+            marker_e2857133f832c093b8c5356373760019.bindTooltip(
+                `<div>
+                     Sriwedari 1 Selatan
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e2857133f832c093b8c5356373760019.setIcon(icon_d41df3833dd77e2fc481f84ff3de0e62);
+            
+    
+            var marker_d369ef441fed5079c80368f03e828241 = L.marker(
+                [-7.56795480396892, 110.814320671231],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_f10d27ce364fd75472063b3eadfca44f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_d19319e0ea2ddd264ca7e838c0a816e0 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_d062ef0e30e929565a2326eec238cfcc = $(`<div id="html_d062ef0e30e929565a2326eec238cfcc" style="width: 100.0%; height: 100.0%;"><b>Sriwedari 2 Selatan</b><br>ID: H07<br>Rute: K1, FD8</div>`)[0];
+                popup_d19319e0ea2ddd264ca7e838c0a816e0.setContent(html_d062ef0e30e929565a2326eec238cfcc);
+            
+        
+
+        marker_d369ef441fed5079c80368f03e828241.bindPopup(popup_d19319e0ea2ddd264ca7e838c0a816e0)
+        ;
+
+        
+    
+    
+            marker_d369ef441fed5079c80368f03e828241.bindTooltip(
+                `<div>
+                     Sriwedari 2 Selatan
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d369ef441fed5079c80368f03e828241.setIcon(icon_f10d27ce364fd75472063b3eadfca44f);
+            
+    
+            var marker_8b05c76fae199d7ca79889e4861d0a5f = L.marker(
+                [-7.53253942382143, 110.748923594566],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_6262375b6a41b103f2f9f25cd300a0a0 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_25e38ba44e4e6de6f3c70feda41bb149 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_bd8480830e90d81683316d8f56507a7c = $(`<div id="html_bd8480830e90d81683316d8f56507a7c" style="width: 100.0%; height: 100.0%;"><b>Colomadu Utara</b><br>ID: H08<br>Rute: K1</div>`)[0];
+                popup_25e38ba44e4e6de6f3c70feda41bb149.setContent(html_bd8480830e90d81683316d8f56507a7c);
+            
+        
+
+        marker_8b05c76fae199d7ca79889e4861d0a5f.bindPopup(popup_25e38ba44e4e6de6f3c70feda41bb149)
+        ;
+
+        
+    
+    
+            marker_8b05c76fae199d7ca79889e4861d0a5f.bindTooltip(
+                `<div>
+                     Colomadu Utara
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_8b05c76fae199d7ca79889e4861d0a5f.setIcon(icon_6262375b6a41b103f2f9f25cd300a0a0);
+            
+    
+            var marker_ad340577194127fe45b398e3efa86f7e = L.marker(
+                [-7.567581219, 110.7835961],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_490debbee2c7a4d7436f45277bc54395 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4bd7c7472480cf6ae2341efdb7b2cd66 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_fc4aa5fa453540fd6297b7437e08e5e5 = $(`<div id="html_fc4aa5fa453540fd6297b7437e08e5e5" style="width: 100.0%; height: 100.0%;"><b>Tugu Lilin</b><br>ID: H09<br>Rute: K3</div>`)[0];
+                popup_4bd7c7472480cf6ae2341efdb7b2cd66.setContent(html_fc4aa5fa453540fd6297b7437e08e5e5);
+            
+        
+
+        marker_ad340577194127fe45b398e3efa86f7e.bindPopup(popup_4bd7c7472480cf6ae2341efdb7b2cd66)
+        ;
+
+        
+    
+    
+            marker_ad340577194127fe45b398e3efa86f7e.bindTooltip(
+                `<div>
+                     Tugu Lilin
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ad340577194127fe45b398e3efa86f7e.setIcon(icon_490debbee2c7a4d7436f45277bc54395);
+            
+    
+            var marker_040137b8f072d11e061508d4bba99737 = L.marker(
+                [-7.57140133360988, 110.829647652826],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_925e9ab10040ece08b12d16e1420d27f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f50849b2ad60d034bbc496658e631778 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_d7fbdf5bad28af917286d9ffb749b10c = $(`<div id="html_d7fbdf5bad28af917286d9ffb749b10c" style="width: 100.0%; height: 100.0%;"><b>Vestenburg (Kantor Pos)</b><br>ID: H10<br>Rute: K3</div>`)[0];
+                popup_f50849b2ad60d034bbc496658e631778.setContent(html_d7fbdf5bad28af917286d9ffb749b10c);
+            
+        
+
+        marker_040137b8f072d11e061508d4bba99737.bindPopup(popup_f50849b2ad60d034bbc496658e631778)
+        ;
+
+        
+    
+    
+            marker_040137b8f072d11e061508d4bba99737.bindTooltip(
+                `<div>
+                     Vestenburg (Kantor Pos)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_040137b8f072d11e061508d4bba99737.setIcon(icon_925e9ab10040ece08b12d16e1420d27f);
+            
+    
+            var marker_16a8b188354f4c9a82723074ae55e6dd = L.marker(
+                [-7.56993057310902, 110.830046989632],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_c979a016520f851c259b916369c31e41 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_816fec7f6fb95953e2494d31e0d93581 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_7e7abdfd6b3d84d0163815465a20d697 = $(`<div id="html_7e7abdfd6b3d84d0163815465a20d697" style="width: 100.0%; height: 100.0%;"><b>Balai Kota</b><br>ID: H11<br>Rute: K3, FD2</div>`)[0];
+                popup_816fec7f6fb95953e2494d31e0d93581.setContent(html_7e7abdfd6b3d84d0163815465a20d697);
+            
+        
+
+        marker_16a8b188354f4c9a82723074ae55e6dd.bindPopup(popup_816fec7f6fb95953e2494d31e0d93581)
+        ;
+
+        
+    
+    
+            marker_16a8b188354f4c9a82723074ae55e6dd.bindTooltip(
+                `<div>
+                     Balai Kota
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_16a8b188354f4c9a82723074ae55e6dd.setIcon(icon_c979a016520f851c259b916369c31e41);
+            
+    
+            var marker_4a704153fbe159ba6d63f90af4379a78 = L.marker(
+                [-7.5684698254206, 110.831727375632],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_ccb0780c7e62097544fe32fd031797b3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ed15422ca1d143956b922c1b90eb980b = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_cdd27cb23d34df8411d3dafa1c5dacbd = $(`<div id="html_cdd27cb23d34df8411d3dafa1c5dacbd" style="width: 100.0%; height: 100.0%;"><b>Pasar Gede</b><br>ID: H12<br>Rute: K3</div>`)[0];
+                popup_ed15422ca1d143956b922c1b90eb980b.setContent(html_cdd27cb23d34df8411d3dafa1c5dacbd);
+            
+        
+
+        marker_4a704153fbe159ba6d63f90af4379a78.bindPopup(popup_ed15422ca1d143956b922c1b90eb980b)
+        ;
+
+        
+    
+    
+            marker_4a704153fbe159ba6d63f90af4379a78.bindTooltip(
+                `<div>
+                     Pasar Gede
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_4a704153fbe159ba6d63f90af4379a78.setIcon(icon_ccb0780c7e62097544fe32fd031797b3);
+            
+    
+            var marker_b86e99fb4dccf6e04e1dfee8d13e8c26 = L.marker(
+                [-7.55653679470118, 110.852209973442],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_f560603b153952ecb2cf79133767300d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f9ed629bbb57e4cec76623f4159bde23 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_ea7153f0cd8a727750dbf9e1063f4800 = $(`<div id="html_ea7153f0cd8a727750dbf9e1063f4800" style="width: 100.0%; height: 100.0%;"><b>Solo Techno Park</b><br>ID: H13<br>Rute: K3</div>`)[0];
+                popup_f9ed629bbb57e4cec76623f4159bde23.setContent(html_ea7153f0cd8a727750dbf9e1063f4800);
+            
+        
+
+        marker_b86e99fb4dccf6e04e1dfee8d13e8c26.bindPopup(popup_f9ed629bbb57e4cec76623f4159bde23)
+        ;
+
+        
+    
+    
+            marker_b86e99fb4dccf6e04e1dfee8d13e8c26.bindTooltip(
+                `<div>
+                     Solo Techno Park
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b86e99fb4dccf6e04e1dfee8d13e8c26.setIcon(icon_f560603b153952ecb2cf79133767300d);
+            
+    
+            var marker_9af683ae14721e26da9078c6df02c521 = L.marker(
+                [-7.55541900174376, 110.854977935521],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_7c572a865413077337774d77198ed217 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_fa20dbd9c9e5cfe33082ac4ee22e23c9 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_0b2b1de364b6e23cc80e187036339c58 = $(`<div id="html_0b2b1de364b6e23cc80e187036339c58" style="width: 100.0%; height: 100.0%;"><b>Kantor Kecamatan Jebres</b><br>ID: H14<br>Rute: K3</div>`)[0];
+                popup_fa20dbd9c9e5cfe33082ac4ee22e23c9.setContent(html_0b2b1de364b6e23cc80e187036339c58);
+            
+        
+
+        marker_9af683ae14721e26da9078c6df02c521.bindPopup(popup_fa20dbd9c9e5cfe33082ac4ee22e23c9)
+        ;
+
+        
+    
+    
+            marker_9af683ae14721e26da9078c6df02c521.bindTooltip(
+                `<div>
+                     Kantor Kecamatan Jebres
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9af683ae14721e26da9078c6df02c521.setIcon(icon_7c572a865413077337774d77198ed217);
+            
+    
+            var marker_8728035d06d49773572cea817a806e72 = L.marker(
+                [-7.55707042819373, 110.860610255225],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_ecd887d4c9ef72546e3fd06bb5fb293f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_834fac974d3c5ab2d440af9c9743c91d = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_81ad52ac36f20dc44de7eb1ec1b9d91d = $(`<div id="html_81ad52ac36f20dc44de7eb1ec1b9d91d" style="width: 100.0%; height: 100.0%;"><b>Halte RS Jiwa / Taman Lansia</b><br>ID: H15<br>Rute: K3</div>`)[0];
+                popup_834fac974d3c5ab2d440af9c9743c91d.setContent(html_81ad52ac36f20dc44de7eb1ec1b9d91d);
+            
+        
+
+        marker_8728035d06d49773572cea817a806e72.bindPopup(popup_834fac974d3c5ab2d440af9c9743c91d)
+        ;
+
+        
+    
+    
+            marker_8728035d06d49773572cea817a806e72.bindTooltip(
+                `<div>
+                     Halte RS Jiwa / Taman Lansia
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_8728035d06d49773572cea817a806e72.setIcon(icon_ecd887d4c9ef72546e3fd06bb5fb293f);
+            
+    
+            var marker_d8452316ae5eecc3aaec819658b35b20 = L.marker(
+                [-7.532634345, 110.7487969],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_0ab68046c82a2ac66a15547dbd5fe9f2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_88be1e7f09aa1e9b840817dbce7b731f = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_0d83ebf8b0a395668e7cf804478f02b6 = $(`<div id="html_0d83ebf8b0a395668e7cf804478f02b6" style="width: 100.0%; height: 100.0%;"><b>Halte Kecamatan Colomadu</b><br>ID: H16<br>Rute: K4</div>`)[0];
+                popup_88be1e7f09aa1e9b840817dbce7b731f.setContent(html_0d83ebf8b0a395668e7cf804478f02b6);
+            
+        
+
+        marker_d8452316ae5eecc3aaec819658b35b20.bindPopup(popup_88be1e7f09aa1e9b840817dbce7b731f)
+        ;
+
+        
+    
+    
+            marker_d8452316ae5eecc3aaec819658b35b20.bindTooltip(
+                `<div>
+                     Halte Kecamatan Colomadu
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d8452316ae5eecc3aaec819658b35b20.setIcon(icon_0ab68046c82a2ac66a15547dbd5fe9f2);
+            
+    
+            var marker_5445c215344f1be13e1a7035df56d1f9 = L.marker(
+                [-7.556663684, 110.8048193],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_db0446cede558157c7d799db8f5777fd = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_805ec383a187950d2e05fc0b07f0c36b = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_99a25825e5c89587301c6a02eccd007c = $(`<div id="html_99a25825e5c89587301c6a02eccd007c" style="width: 100.0%; height: 100.0%;"><b>Stadion Manahan</b><br>ID: H17<br>Rute: K4</div>`)[0];
+                popup_805ec383a187950d2e05fc0b07f0c36b.setContent(html_99a25825e5c89587301c6a02eccd007c);
+            
+        
+
+        marker_5445c215344f1be13e1a7035df56d1f9.bindPopup(popup_805ec383a187950d2e05fc0b07f0c36b)
+        ;
+
+        
+    
+    
+            marker_5445c215344f1be13e1a7035df56d1f9.bindTooltip(
+                `<div>
+                     Stadion Manahan
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_5445c215344f1be13e1a7035df56d1f9.setIcon(icon_db0446cede558157c7d799db8f5777fd);
+            
+    
+            var marker_2390f6470c7eb8457e10f5497c23b98b = L.marker(
+                [-7.551298569, 110.8182099],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_fa9985ca32c9dd46a61c378392fba0db = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_bf2669640d8081f43d5ff972200371c3 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_ff17abe4037cdd9002a95e9e90327ec1 = $(`<div id="html_ff17abe4037cdd9002a95e9e90327ec1" style="width: 100.0%; height: 100.0%;"><b>Terminal Tirtonadi</b><br>ID: H18<br>Rute: K4, K6</div>`)[0];
+                popup_bf2669640d8081f43d5ff972200371c3.setContent(html_ff17abe4037cdd9002a95e9e90327ec1);
+            
+        
+
+        marker_2390f6470c7eb8457e10f5497c23b98b.bindPopup(popup_bf2669640d8081f43d5ff972200371c3)
+        ;
+
+        
+    
+    
+            marker_2390f6470c7eb8457e10f5497c23b98b.bindTooltip(
+                `<div>
+                     Terminal Tirtonadi
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2390f6470c7eb8457e10f5497c23b98b.setIcon(icon_fa9985ca32c9dd46a61c378392fba0db);
+            
+    
+            var marker_3774887cfea89f3ce146b557fc372088 = L.marker(
+                [-7.568500872, 110.8166443],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_ece59f18a9723b679b09c181644b7405 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_bf7f857a694f8700fa8658bb554eb43f = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_99fd0d14cb63355e2d843cc9b3df45da = $(`<div id="html_99fd0d14cb63355e2d843cc9b3df45da" style="width: 100.0%; height: 100.0%;"><b>Ngapeman</b><br>ID: H19<br>Rute: K5, FD8</div>`)[0];
+                popup_bf7f857a694f8700fa8658bb554eb43f.setContent(html_99fd0d14cb63355e2d843cc9b3df45da);
+            
+        
+
+        marker_3774887cfea89f3ce146b557fc372088.bindPopup(popup_bf7f857a694f8700fa8658bb554eb43f)
+        ;
+
+        
+    
+    
+            marker_3774887cfea89f3ce146b557fc372088.bindTooltip(
+                `<div>
+                     Ngapeman
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3774887cfea89f3ce146b557fc372088.setIcon(icon_ece59f18a9723b679b09c181644b7405);
+            
+    
+            var marker_34d799e98b1d4479be18e9ded9fb7dde = L.marker(
+                [-7.567047482, 110.8118452],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_1a8d601c4c1e6b3a9910936106fd7107 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_7741e1fcf29cb2de568293d6cc9f2676 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_5ec7d87190a6a524c1097207aabbe7bf = $(`<div id="html_5ec7d87190a6a524c1097207aabbe7bf" style="width: 100.0%; height: 100.0%;"><b>Sriwedari</b><br>ID: H20<br>Rute: K5</div>`)[0];
+                popup_7741e1fcf29cb2de568293d6cc9f2676.setContent(html_5ec7d87190a6a524c1097207aabbe7bf);
+            
+        
+
+        marker_34d799e98b1d4479be18e9ded9fb7dde.bindPopup(popup_7741e1fcf29cb2de568293d6cc9f2676)
+        ;
+
+        
+    
+    
+            marker_34d799e98b1d4479be18e9ded9fb7dde.bindTooltip(
+                `<div>
+                     Sriwedari
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_34d799e98b1d4479be18e9ded9fb7dde.setIcon(icon_1a8d601c4c1e6b3a9910936106fd7107);
+            
+    
+            var marker_6fa350713a2d68465e5b2cb361fea11e = L.marker(
+                [-7.53171343, 110.7473448],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_60b767383d927f5ace118ace0349da76 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_972e437aa898f3fa89cb7cb795fc6876 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_d111fb646bbba9456ee5da9a8a8c8d64 = $(`<div id="html_d111fb646bbba9456ee5da9a8a8c8d64" style="width: 100.0%; height: 100.0%;"><b>Landasan Udara (Pasar Colomadu)</b><br>ID: H21<br>Rute: K5, FD7</div>`)[0];
+                popup_972e437aa898f3fa89cb7cb795fc6876.setContent(html_d111fb646bbba9456ee5da9a8a8c8d64);
+            
+        
+
+        marker_6fa350713a2d68465e5b2cb361fea11e.bindPopup(popup_972e437aa898f3fa89cb7cb795fc6876)
+        ;
+
+        
+    
+    
+            marker_6fa350713a2d68465e5b2cb361fea11e.bindTooltip(
+                `<div>
+                     Landasan Udara (Pasar Colomadu)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6fa350713a2d68465e5b2cb361fea11e.setIcon(icon_60b767383d927f5ace118ace0349da76);
+            
+    
+            var marker_34e047ed4bb194843093bf9f864291e6 = L.marker(
+                [-7.569086355, 110.8221284],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_9c29974ce958afb66935dde846681382 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2c2089b6a6a4eca74d22c94f45a127a8 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_4185087113c41afd65e8649837af086c = $(`<div id="html_4185087113c41afd65e8649837af086c" style="width: 100.0%; height: 100.0%;"><b>Ngarsopuro</b><br>ID: H22<br>Rute: K6</div>`)[0];
+                popup_2c2089b6a6a4eca74d22c94f45a127a8.setContent(html_4185087113c41afd65e8649837af086c);
+            
+        
+
+        marker_34e047ed4bb194843093bf9f864291e6.bindPopup(popup_2c2089b6a6a4eca74d22c94f45a127a8)
+        ;
+
+        
+    
+    
+            marker_34e047ed4bb194843093bf9f864291e6.bindTooltip(
+                `<div>
+                     Ngarsopuro
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_34e047ed4bb194843093bf9f864291e6.setIcon(icon_9c29974ce958afb66935dde846681382);
+            
+    
+            var marker_701bc1d3022bc68760f75e6c901e229e = L.marker(
+                [-7.571950677, 110.8166645],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_4b8fc700a0605045d0b89a6c3e893fc7 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4bae07d47fecadaf65907c76796dbe47 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_77fbdb356b0d0d1cb93ea274a3381bdd = $(`<div id="html_77fbdb356b0d0d1cb93ea274a3381bdd" style="width: 100.0%; height: 100.0%;"><b>Pasar Kembang</b><br>ID: H23<br>Rute: K6</div>`)[0];
+                popup_4bae07d47fecadaf65907c76796dbe47.setContent(html_77fbdb356b0d0d1cb93ea274a3381bdd);
+            
+        
+
+        marker_701bc1d3022bc68760f75e6c901e229e.bindPopup(popup_4bae07d47fecadaf65907c76796dbe47)
+        ;
+
+        
+    
+    
+            marker_701bc1d3022bc68760f75e6c901e229e.bindTooltip(
+                `<div>
+                     Pasar Kembang
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_701bc1d3022bc68760f75e6c901e229e.setIcon(icon_4b8fc700a0605045d0b89a6c3e893fc7);
+            
+    
+            var marker_d098375f12cc476707eff7c07ee7b309 = L.marker(
+                [-7.567852615, 110.8146095],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_6147af7d5429d9396afac0734a17a11a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_75266349ab6b7110d903c500b40be14c = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_0f4cbbb93c743f3d8dad8459dfd2be7d = $(`<div id="html_0f4cbbb93c743f3d8dad8459dfd2be7d" style="width: 100.0%; height: 100.0%;"><b>Sriwedari 2 Utara</b><br>ID: H24<br>Rute: FD2, FD8</div>`)[0];
+                popup_75266349ab6b7110d903c500b40be14c.setContent(html_0f4cbbb93c743f3d8dad8459dfd2be7d);
+            
+        
+
+        marker_d098375f12cc476707eff7c07ee7b309.bindPopup(popup_75266349ab6b7110d903c500b40be14c)
+        ;
+
+        
+    
+    
+            marker_d098375f12cc476707eff7c07ee7b309.bindTooltip(
+                `<div>
+                     Sriwedari 2 Utara
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d098375f12cc476707eff7c07ee7b309.setIcon(icon_6147af7d5429d9396afac0734a17a11a);
+            
+    
+            var marker_32cfc80160643fab9d113f8fdfb9fd23 = L.marker(
+                [-7.568829291, 110.8106188],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_8f4662250bf5b0cec1b93a6c944ea20f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ef3f0a4ab394df6e3a78e58e035ec9ba = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_9dbf0601240d2672f8feefed239d7351 = $(`<div id="html_9dbf0601240d2672f8feefed239d7351" style="width: 100.0%; height: 100.0%;"><b>Museum Keris B</b><br>ID: H25<br>Rute: FD8</div>`)[0];
+                popup_ef3f0a4ab394df6e3a78e58e035ec9ba.setContent(html_9dbf0601240d2672f8feefed239d7351);
+            
+        
+
+        marker_32cfc80160643fab9d113f8fdfb9fd23.bindPopup(popup_ef3f0a4ab394df6e3a78e58e035ec9ba)
+        ;
+
+        
+    
+    
+            marker_32cfc80160643fab9d113f8fdfb9fd23.bindTooltip(
+                `<div>
+                     Museum Keris B
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_32cfc80160643fab9d113f8fdfb9fd23.setIcon(icon_8f4662250bf5b0cec1b93a6c944ea20f);
+            
+    
+            var marker_0628963326913aaa5e53aab8206489ff = L.marker(
+                [-7.567624751, 110.8220978],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_b308eb19933203e407c214a28fea465a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ca054e810a846c05f1725fff52d34371 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_4237366611e28cbf23ac27ee93cf10e2 = $(`<div id="html_4237366611e28cbf23ac27ee93cf10e2" style="width: 100.0%; height: 100.0%;"><b>Mangkunegaran</b><br>ID: H26<br>Rute: FD9</div>`)[0];
+                popup_ca054e810a846c05f1725fff52d34371.setContent(html_4237366611e28cbf23ac27ee93cf10e2);
+            
+        
+
+        marker_0628963326913aaa5e53aab8206489ff.bindPopup(popup_ca054e810a846c05f1725fff52d34371)
+        ;
+
+        
+    
+    
+            marker_0628963326913aaa5e53aab8206489ff.bindTooltip(
+                `<div>
+                     Mangkunegaran
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_0628963326913aaa5e53aab8206489ff.setIcon(icon_b308eb19933203e407c214a28fea465a);
+            
+    
+            var marker_ac384b5ca8c07e7a2efb0019fe85f6d0 = L.marker(
+                [-7.564166826, 110.8185673],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_38a205fb686cec59f0257f5117c686cf = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ae61592b4c54a3daa1031dd1c447ab66 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_ed368f612b75d6a0736b01ff3e2449ee = $(`<div id="html_ed368f612b75d6a0736b01ff3e2449ee" style="width: 100.0%; height: 100.0%;"><b>Sahid</b><br>ID: H27<br>Rute: FD8, FD9</div>`)[0];
+                popup_ae61592b4c54a3daa1031dd1c447ab66.setContent(html_ed368f612b75d6a0736b01ff3e2449ee);
+            
+        
+
+        marker_ac384b5ca8c07e7a2efb0019fe85f6d0.bindPopup(popup_ae61592b4c54a3daa1031dd1c447ab66)
+        ;
+
+        
+    
+    
+            marker_ac384b5ca8c07e7a2efb0019fe85f6d0.bindTooltip(
+                `<div>
+                     Sahid
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ac384b5ca8c07e7a2efb0019fe85f6d0.setIcon(icon_38a205fb686cec59f0257f5117c686cf);
+            
+    
+            var marker_c2be86eaa8073c1e1d0d7d4dcf06ccf0 = L.marker(
+                [-7.575037806, 110.8264383],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_d4e77e33899f4b28f6ccf65add73d198 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e9af98ff91abb93e48a16d26d3cb1160 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_56cd070f5518922cceec178e88f1f5ec = $(`<div id="html_56cd070f5518922cceec178e88f1f5ec" style="width: 100.0%; height: 100.0%;"><b>Pasar Klewer</b><br>ID: H28<br>Rute: FD10</div>`)[0];
+                popup_e9af98ff91abb93e48a16d26d3cb1160.setContent(html_56cd070f5518922cceec178e88f1f5ec);
+            
+        
+
+        marker_c2be86eaa8073c1e1d0d7d4dcf06ccf0.bindPopup(popup_e9af98ff91abb93e48a16d26d3cb1160)
+        ;
+
+        
+    
+    
+            marker_c2be86eaa8073c1e1d0d7d4dcf06ccf0.bindTooltip(
+                `<div>
+                     Pasar Klewer
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c2be86eaa8073c1e1d0d7d4dcf06ccf0.setIcon(icon_d4e77e33899f4b28f6ccf65add73d198);
+            
+    
+            var marker_5a3198a9edb5feaa868b19fd23795810 = L.marker(
+                [-7.567996022, 110.8582507],
+                {
+}
+            ).addTo(marker_cluster_04586e53ea1867587732057ec6235c5d);
+        
+    
+            var icon_beb675036e5f7a56c045f23cdc487749 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "bus",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4132624e97ccc44d8c7bd41ee6df531f = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_d1be4aa2c9c0270b2d0b43aa3d3db62b = $(`<div id="html_d1be4aa2c9c0270b2d0b43aa3d3db62b" style="width: 100.0%; height: 100.0%;"><b>Pasar Pucang Sawit A</b><br>ID: H29<br>Rute: FD10</div>`)[0];
+                popup_4132624e97ccc44d8c7bd41ee6df531f.setContent(html_d1be4aa2c9c0270b2d0b43aa3d3db62b);
+            
+        
+
+        marker_5a3198a9edb5feaa868b19fd23795810.bindPopup(popup_4132624e97ccc44d8c7bd41ee6df531f)
+        ;
+
+        
+    
+    
+            marker_5a3198a9edb5feaa868b19fd23795810.bindTooltip(
+                `<div>
+                     Pasar Pucang Sawit A
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_5a3198a9edb5feaa868b19fd23795810.setIcon(icon_beb675036e5f7a56c045f23cdc487749);
+            
+    
+            marker_cluster_04586e53ea1867587732057ec6235c5d.addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+            var poly_line_a58590cf2b72118744eb41e9f13f72b4 = L.polyline(
+                [[-7.56513474408024, 110.858685876169], [-7.56455236195493, 110.8561722718]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_c6c942f3d418c39ebb892dbe12553c21 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_45e137701d23522f91e72cf450012a0f = $(`<div id="html_45e137701d23522f91e72cf450012a0f" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_c6c942f3d418c39ebb892dbe12553c21.setContent(html_45e137701d23522f91e72cf450012a0f);
+            
+        
+
+        poly_line_a58590cf2b72118744eb41e9f13f72b4.bindPopup(popup_c6c942f3d418c39ebb892dbe12553c21)
+        ;
+
+        
+    
+    
+            poly_line_a58590cf2b72118744eb41e9f13f72b4.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_13cccba133e2708bc5138b59166998a0 = L.polyline(
+                [[-7.56513474408024, 110.858685876169], [-7.57175743180982, 110.8297470581]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_07726a386d007e531b0ac50089a524e6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_b547a08260c006880c9d4512cf3cd3a9 = $(`<div id="html_b547a08260c006880c9d4512cf3cd3a9" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_07726a386d007e531b0ac50089a524e6.setContent(html_b547a08260c006880c9d4512cf3cd3a9);
+            
+        
+
+        poly_line_13cccba133e2708bc5138b59166998a0.bindPopup(popup_07726a386d007e531b0ac50089a524e6)
+        ;
+
+        
+    
+    
+            poly_line_13cccba133e2708bc5138b59166998a0.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_ef0e3f12c7b3dd24915b84fe7254457a = L.polyline(
+                [[-7.56513474408024, 110.858685876169], [-7.57203341152584, 110.827739168751]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_feefa034a2a0084143f36b4adf395595 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_f68f1cc0f3aef45e31ae10c047d0c0ab = $(`<div id="html_f68f1cc0f3aef45e31ae10c047d0c0ab" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_feefa034a2a0084143f36b4adf395595.setContent(html_f68f1cc0f3aef45e31ae10c047d0c0ab);
+            
+        
+
+        poly_line_ef0e3f12c7b3dd24915b84fe7254457a.bindPopup(popup_feefa034a2a0084143f36b4adf395595)
+        ;
+
+        
+    
+    
+            poly_line_ef0e3f12c7b3dd24915b84fe7254457a.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_3f918f54ed0e6c0e58518766cdecf6b0 = L.polyline(
+                [[-7.56513474408024, 110.858685876169], [-7.57053451729552, 110.822770250784]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_5e5a5ad2c67be53ed92b9955d5289db4 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_4e6e2a9c899a210793c0941a5f291d9c = $(`<div id="html_4e6e2a9c899a210793c0941a5f291d9c" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_5e5a5ad2c67be53ed92b9955d5289db4.setContent(html_4e6e2a9c899a210793c0941a5f291d9c);
+            
+        
+
+        poly_line_3f918f54ed0e6c0e58518766cdecf6b0.bindPopup(popup_5e5a5ad2c67be53ed92b9955d5289db4)
+        ;
+
+        
+    
+    
+            poly_line_3f918f54ed0e6c0e58518766cdecf6b0.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_9fd65131c64aa56ddacdc07b8ee76603 = L.polyline(
+                [[-7.56513474408024, 110.858685876169], [-7.56729936753916, 110.812057143543]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_59b74c17068fff5d919662069fede193 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_d84f51facc88d47736611152acd852a8 = $(`<div id="html_d84f51facc88d47736611152acd852a8" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_59b74c17068fff5d919662069fede193.setContent(html_d84f51facc88d47736611152acd852a8);
+            
+        
+
+        poly_line_9fd65131c64aa56ddacdc07b8ee76603.bindPopup(popup_59b74c17068fff5d919662069fede193)
+        ;
+
+        
+    
+    
+            poly_line_9fd65131c64aa56ddacdc07b8ee76603.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_209d0b940f981129154e717c0003f2f5 = L.polyline(
+                [[-7.56513474408024, 110.858685876169], [-7.56795480396892, 110.814320671231]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_cf814ccaa5c07e632048dd297209ec29 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_7a9b5409f0513ae4424f100bafe18970 = $(`<div id="html_7a9b5409f0513ae4424f100bafe18970" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_cf814ccaa5c07e632048dd297209ec29.setContent(html_7a9b5409f0513ae4424f100bafe18970);
+            
+        
+
+        poly_line_209d0b940f981129154e717c0003f2f5.bindPopup(popup_cf814ccaa5c07e632048dd297209ec29)
+        ;
+
+        
+    
+    
+            poly_line_209d0b940f981129154e717c0003f2f5.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_fe5713c96988f74374653faa2d6a5453 = L.polyline(
+                [[-7.56513474408024, 110.858685876169], [-7.53253942382143, 110.748923594566]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_913dd0f5146189354326c6053302bca6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_fb7ef421d83136973c383f4d31e25286 = $(`<div id="html_fb7ef421d83136973c383f4d31e25286" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_913dd0f5146189354326c6053302bca6.setContent(html_fb7ef421d83136973c383f4d31e25286);
+            
+        
+
+        poly_line_fe5713c96988f74374653faa2d6a5453.bindPopup(popup_913dd0f5146189354326c6053302bca6)
+        ;
+
+        
+    
+    
+            poly_line_fe5713c96988f74374653faa2d6a5453.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_703c4f9f29d130c4548f1f72d5fbcc54 = L.polyline(
+                [[-7.56513474408024, 110.858685876169], [-7.56993057310902, 110.830046989632]],
+                {"bubblingMouseEvents": true, "color": "#FF9FF3", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF9FF3", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_c8c34122927b9b739d7c32a4710cd0e9 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_a914c6ccc438fa9b45da3066dcbea248 = $(`<div id="html_a914c6ccc438fa9b45da3066dcbea248" style="width: 100.0%; height: 100.0%;">Rute FD2</div>`)[0];
+                popup_c8c34122927b9b739d7c32a4710cd0e9.setContent(html_a914c6ccc438fa9b45da3066dcbea248);
+            
+        
+
+        poly_line_703c4f9f29d130c4548f1f72d5fbcc54.bindPopup(popup_c8c34122927b9b739d7c32a4710cd0e9)
+        ;
+
+        
+    
+    
+            poly_line_703c4f9f29d130c4548f1f72d5fbcc54.bindTooltip(
+                `<div>
+                     Rute FD2
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_39c4e8b3a7ca9820d8cd3926b8a62ff3 = L.polyline(
+                [[-7.56513474408024, 110.858685876169], [-7.567852615, 110.8146095]],
+                {"bubblingMouseEvents": true, "color": "#FF9FF3", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF9FF3", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_8c48828285881a768b5853970f7416da = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_5a88b2725e0dfbfa4d52e02acfa25519 = $(`<div id="html_5a88b2725e0dfbfa4d52e02acfa25519" style="width: 100.0%; height: 100.0%;">Rute FD2</div>`)[0];
+                popup_8c48828285881a768b5853970f7416da.setContent(html_5a88b2725e0dfbfa4d52e02acfa25519);
+            
+        
+
+        poly_line_39c4e8b3a7ca9820d8cd3926b8a62ff3.bindPopup(popup_8c48828285881a768b5853970f7416da)
+        ;
+
+        
+    
+    
+            poly_line_39c4e8b3a7ca9820d8cd3926b8a62ff3.bindTooltip(
+                `<div>
+                     Rute FD2
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_0a7c6beb6900231fc814eda3b8861e98 = L.polyline(
+                [[-7.56455236195493, 110.8561722718], [-7.57175743180982, 110.8297470581]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_d4801b8d9d430cc335778898f5eac1b1 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_e805557bc3319500d3fac64eba4cad84 = $(`<div id="html_e805557bc3319500d3fac64eba4cad84" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_d4801b8d9d430cc335778898f5eac1b1.setContent(html_e805557bc3319500d3fac64eba4cad84);
+            
+        
+
+        poly_line_0a7c6beb6900231fc814eda3b8861e98.bindPopup(popup_d4801b8d9d430cc335778898f5eac1b1)
+        ;
+
+        
+    
+    
+            poly_line_0a7c6beb6900231fc814eda3b8861e98.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_030da78e3e02a4a68ca08ef8868791d9 = L.polyline(
+                [[-7.56455236195493, 110.8561722718], [-7.57203341152584, 110.827739168751]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_858bde1eabfeee937035aec6d1dfa5b8 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_25e77a057b6dca92880a82784e8dce72 = $(`<div id="html_25e77a057b6dca92880a82784e8dce72" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_858bde1eabfeee937035aec6d1dfa5b8.setContent(html_25e77a057b6dca92880a82784e8dce72);
+            
+        
+
+        poly_line_030da78e3e02a4a68ca08ef8868791d9.bindPopup(popup_858bde1eabfeee937035aec6d1dfa5b8)
+        ;
+
+        
+    
+    
+            poly_line_030da78e3e02a4a68ca08ef8868791d9.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_52d833466a680aded89141472d685caa = L.polyline(
+                [[-7.56455236195493, 110.8561722718], [-7.57053451729552, 110.822770250784]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_beef882f18bd802cf231990800a4f4b5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_c2a43fbc0214afc68476665d302fd43f = $(`<div id="html_c2a43fbc0214afc68476665d302fd43f" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_beef882f18bd802cf231990800a4f4b5.setContent(html_c2a43fbc0214afc68476665d302fd43f);
+            
+        
+
+        poly_line_52d833466a680aded89141472d685caa.bindPopup(popup_beef882f18bd802cf231990800a4f4b5)
+        ;
+
+        
+    
+    
+            poly_line_52d833466a680aded89141472d685caa.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_0da08abb22fd084e9dfde93628e236e6 = L.polyline(
+                [[-7.56455236195493, 110.8561722718], [-7.56729936753916, 110.812057143543]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_74a640bb83ab83ff7d36456a32743a11 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_966d0e3f3cc7c02b70224f81f3ff4275 = $(`<div id="html_966d0e3f3cc7c02b70224f81f3ff4275" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_74a640bb83ab83ff7d36456a32743a11.setContent(html_966d0e3f3cc7c02b70224f81f3ff4275);
+            
+        
+
+        poly_line_0da08abb22fd084e9dfde93628e236e6.bindPopup(popup_74a640bb83ab83ff7d36456a32743a11)
+        ;
+
+        
+    
+    
+            poly_line_0da08abb22fd084e9dfde93628e236e6.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_f90fd72cb3a97e55bbc2210df24d30ea = L.polyline(
+                [[-7.56455236195493, 110.8561722718], [-7.56795480396892, 110.814320671231]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_09b75af990ec2810a5faa246578b4eca = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_e49a839afc6ded00601f96e2e40ceb91 = $(`<div id="html_e49a839afc6ded00601f96e2e40ceb91" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_09b75af990ec2810a5faa246578b4eca.setContent(html_e49a839afc6ded00601f96e2e40ceb91);
+            
+        
+
+        poly_line_f90fd72cb3a97e55bbc2210df24d30ea.bindPopup(popup_09b75af990ec2810a5faa246578b4eca)
+        ;
+
+        
+    
+    
+            poly_line_f90fd72cb3a97e55bbc2210df24d30ea.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_27774acf3eb8659f2b665e29cc88dc1c = L.polyline(
+                [[-7.56455236195493, 110.8561722718], [-7.53253942382143, 110.748923594566]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_bf12708d5e93e539383c1fa877927e6d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_9d050355aeae65b47aa7a603568820bf = $(`<div id="html_9d050355aeae65b47aa7a603568820bf" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_bf12708d5e93e539383c1fa877927e6d.setContent(html_9d050355aeae65b47aa7a603568820bf);
+            
+        
+
+        poly_line_27774acf3eb8659f2b665e29cc88dc1c.bindPopup(popup_bf12708d5e93e539383c1fa877927e6d)
+        ;
+
+        
+    
+    
+            poly_line_27774acf3eb8659f2b665e29cc88dc1c.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_79f962dff3d2579440dbb0cb6ee85b1d = L.polyline(
+                [[-7.57175743180982, 110.8297470581], [-7.57203341152584, 110.827739168751]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_a44239c48a0f754c2577451fff8e6326 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_875db3f69d1ba51c61b3d466f15f01ba = $(`<div id="html_875db3f69d1ba51c61b3d466f15f01ba" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_a44239c48a0f754c2577451fff8e6326.setContent(html_875db3f69d1ba51c61b3d466f15f01ba);
+            
+        
+
+        poly_line_79f962dff3d2579440dbb0cb6ee85b1d.bindPopup(popup_a44239c48a0f754c2577451fff8e6326)
+        ;
+
+        
+    
+    
+            poly_line_79f962dff3d2579440dbb0cb6ee85b1d.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_07a1baf52003f5c65997d8fbb71f7dc3 = L.polyline(
+                [[-7.57175743180982, 110.8297470581], [-7.57053451729552, 110.822770250784]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_3afb895549a13ee6b1209b5bd9849376 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_0a699d434c12b15e10d1535a77759b74 = $(`<div id="html_0a699d434c12b15e10d1535a77759b74" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_3afb895549a13ee6b1209b5bd9849376.setContent(html_0a699d434c12b15e10d1535a77759b74);
+            
+        
+
+        poly_line_07a1baf52003f5c65997d8fbb71f7dc3.bindPopup(popup_3afb895549a13ee6b1209b5bd9849376)
+        ;
+
+        
+    
+    
+            poly_line_07a1baf52003f5c65997d8fbb71f7dc3.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_59b413c6f773c5f2d1657e27beaac03b = L.polyline(
+                [[-7.57175743180982, 110.8297470581], [-7.56729936753916, 110.812057143543]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_16c770d5b00a0c0dc4f185f7df8f9ad6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_457af6c6cae5290cf0b96239acf33df5 = $(`<div id="html_457af6c6cae5290cf0b96239acf33df5" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_16c770d5b00a0c0dc4f185f7df8f9ad6.setContent(html_457af6c6cae5290cf0b96239acf33df5);
+            
+        
+
+        poly_line_59b413c6f773c5f2d1657e27beaac03b.bindPopup(popup_16c770d5b00a0c0dc4f185f7df8f9ad6)
+        ;
+
+        
+    
+    
+            poly_line_59b413c6f773c5f2d1657e27beaac03b.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_efb305c36307589ebc584939945fc88b = L.polyline(
+                [[-7.57175743180982, 110.8297470581], [-7.56795480396892, 110.814320671231]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_1f612d326ea1f64bf8b707c160da971a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_77a70408acf9d44c14a243863e7b8d83 = $(`<div id="html_77a70408acf9d44c14a243863e7b8d83" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_1f612d326ea1f64bf8b707c160da971a.setContent(html_77a70408acf9d44c14a243863e7b8d83);
+            
+        
+
+        poly_line_efb305c36307589ebc584939945fc88b.bindPopup(popup_1f612d326ea1f64bf8b707c160da971a)
+        ;
+
+        
+    
+    
+            poly_line_efb305c36307589ebc584939945fc88b.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_9bdd84390a1b5ccae270124f6b027cc5 = L.polyline(
+                [[-7.57175743180982, 110.8297470581], [-7.53253942382143, 110.748923594566]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_f93aa25a8554a6e2a5b00523160c31fc = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_5f8d3f15e9612abb9b248f9db44c089e = $(`<div id="html_5f8d3f15e9612abb9b248f9db44c089e" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_f93aa25a8554a6e2a5b00523160c31fc.setContent(html_5f8d3f15e9612abb9b248f9db44c089e);
+            
+        
+
+        poly_line_9bdd84390a1b5ccae270124f6b027cc5.bindPopup(popup_f93aa25a8554a6e2a5b00523160c31fc)
+        ;
+
+        
+    
+    
+            poly_line_9bdd84390a1b5ccae270124f6b027cc5.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_47c00885bad484bb94a9b5844c6b1f55 = L.polyline(
+                [[-7.57203341152584, 110.827739168751], [-7.57053451729552, 110.822770250784]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_8963a36facdee53453fa9043a2a3517a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_9bbdb3281e48d365cf27f43168f55c9b = $(`<div id="html_9bbdb3281e48d365cf27f43168f55c9b" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_8963a36facdee53453fa9043a2a3517a.setContent(html_9bbdb3281e48d365cf27f43168f55c9b);
+            
+        
+
+        poly_line_47c00885bad484bb94a9b5844c6b1f55.bindPopup(popup_8963a36facdee53453fa9043a2a3517a)
+        ;
+
+        
+    
+    
+            poly_line_47c00885bad484bb94a9b5844c6b1f55.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_5102a3971a0cfb6a92c228fec31934f1 = L.polyline(
+                [[-7.57203341152584, 110.827739168751], [-7.56729936753916, 110.812057143543]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_e8b8f12459a0d54faab50c12447c4935 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_9735cec0064a8b17d53e9ecb5e7b21c9 = $(`<div id="html_9735cec0064a8b17d53e9ecb5e7b21c9" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_e8b8f12459a0d54faab50c12447c4935.setContent(html_9735cec0064a8b17d53e9ecb5e7b21c9);
+            
+        
+
+        poly_line_5102a3971a0cfb6a92c228fec31934f1.bindPopup(popup_e8b8f12459a0d54faab50c12447c4935)
+        ;
+
+        
+    
+    
+            poly_line_5102a3971a0cfb6a92c228fec31934f1.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_b653092f08a1dadda663c6b0d4be52d0 = L.polyline(
+                [[-7.57203341152584, 110.827739168751], [-7.56795480396892, 110.814320671231]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_88a65a7ff1ab7c8d6390761aa5c070ef = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_e62839a786c1311db6007dff8940a0fb = $(`<div id="html_e62839a786c1311db6007dff8940a0fb" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_88a65a7ff1ab7c8d6390761aa5c070ef.setContent(html_e62839a786c1311db6007dff8940a0fb);
+            
+        
+
+        poly_line_b653092f08a1dadda663c6b0d4be52d0.bindPopup(popup_88a65a7ff1ab7c8d6390761aa5c070ef)
+        ;
+
+        
+    
+    
+            poly_line_b653092f08a1dadda663c6b0d4be52d0.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_9f6e15d83225b11e9fb52543974d0952 = L.polyline(
+                [[-7.57203341152584, 110.827739168751], [-7.53253942382143, 110.748923594566]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_96373ffaf8e5efbd09f0092f9fa885eb = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_94149e8460d01b1fa11e3114f7057752 = $(`<div id="html_94149e8460d01b1fa11e3114f7057752" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_96373ffaf8e5efbd09f0092f9fa885eb.setContent(html_94149e8460d01b1fa11e3114f7057752);
+            
+        
+
+        poly_line_9f6e15d83225b11e9fb52543974d0952.bindPopup(popup_96373ffaf8e5efbd09f0092f9fa885eb)
+        ;
+
+        
+    
+    
+            poly_line_9f6e15d83225b11e9fb52543974d0952.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_59075071375852dc74d7cc21cb427b7c = L.polyline(
+                [[-7.57053451729552, 110.822770250784], [-7.56729936753916, 110.812057143543]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_6dec5626da07770e5a435ebef6bba74a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_c850cfb841af5dade7f90fda2ff1d9d4 = $(`<div id="html_c850cfb841af5dade7f90fda2ff1d9d4" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_6dec5626da07770e5a435ebef6bba74a.setContent(html_c850cfb841af5dade7f90fda2ff1d9d4);
+            
+        
+
+        poly_line_59075071375852dc74d7cc21cb427b7c.bindPopup(popup_6dec5626da07770e5a435ebef6bba74a)
+        ;
+
+        
+    
+    
+            poly_line_59075071375852dc74d7cc21cb427b7c.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_0e58711315bea2a2fe9df149b7ef05cb = L.polyline(
+                [[-7.57053451729552, 110.822770250784], [-7.56795480396892, 110.814320671231]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_c3a4854af01863e3cb2ca0722b308dec = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_e9775360768f5f9f29d74bfa2af032b0 = $(`<div id="html_e9775360768f5f9f29d74bfa2af032b0" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_c3a4854af01863e3cb2ca0722b308dec.setContent(html_e9775360768f5f9f29d74bfa2af032b0);
+            
+        
+
+        poly_line_0e58711315bea2a2fe9df149b7ef05cb.bindPopup(popup_c3a4854af01863e3cb2ca0722b308dec)
+        ;
+
+        
+    
+    
+            poly_line_0e58711315bea2a2fe9df149b7ef05cb.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_e6fdb2c3cb8a2457c1c8bad1c7b39f0a = L.polyline(
+                [[-7.57053451729552, 110.822770250784], [-7.53253942382143, 110.748923594566]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_fcdd3294981625aac403d62ba3aec31d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_43c7d7664f3899763e74ef5a1a5ee6f8 = $(`<div id="html_43c7d7664f3899763e74ef5a1a5ee6f8" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_fcdd3294981625aac403d62ba3aec31d.setContent(html_43c7d7664f3899763e74ef5a1a5ee6f8);
+            
+        
+
+        poly_line_e6fdb2c3cb8a2457c1c8bad1c7b39f0a.bindPopup(popup_fcdd3294981625aac403d62ba3aec31d)
+        ;
+
+        
+    
+    
+            poly_line_e6fdb2c3cb8a2457c1c8bad1c7b39f0a.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_cbb188ce15d27df3d1990fada6e59170 = L.polyline(
+                [[-7.56729936753916, 110.812057143543], [-7.56795480396892, 110.814320671231]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_be844be12248253e9ae4c9719b72cd04 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_ddcda5b8dfa0105fb28a33ce1ea02c8b = $(`<div id="html_ddcda5b8dfa0105fb28a33ce1ea02c8b" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_be844be12248253e9ae4c9719b72cd04.setContent(html_ddcda5b8dfa0105fb28a33ce1ea02c8b);
+            
+        
+
+        poly_line_cbb188ce15d27df3d1990fada6e59170.bindPopup(popup_be844be12248253e9ae4c9719b72cd04)
+        ;
+
+        
+    
+    
+            poly_line_cbb188ce15d27df3d1990fada6e59170.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_d1e77b174d96740833c66fae71e23d5c = L.polyline(
+                [[-7.56729936753916, 110.812057143543], [-7.53253942382143, 110.748923594566]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_4bc86fbfc118fd7bd11d534025d3f4e4 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_f5f1fc3a17b4ada4d872c92d20ad8b2b = $(`<div id="html_f5f1fc3a17b4ada4d872c92d20ad8b2b" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_4bc86fbfc118fd7bd11d534025d3f4e4.setContent(html_f5f1fc3a17b4ada4d872c92d20ad8b2b);
+            
+        
+
+        poly_line_d1e77b174d96740833c66fae71e23d5c.bindPopup(popup_4bc86fbfc118fd7bd11d534025d3f4e4)
+        ;
+
+        
+    
+    
+            poly_line_d1e77b174d96740833c66fae71e23d5c.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_c4b792dc1812d2eb950ff6948ce06604 = L.polyline(
+                [[-7.56729936753916, 110.812057143543], [-7.568500872, 110.8166443]],
+                {"bubblingMouseEvents": true, "color": "#5F27CD", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#5F27CD", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_3f60289a5c06c0d81fab15877bb2e199 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_c91f9d839113002271dee4d41fad963c = $(`<div id="html_c91f9d839113002271dee4d41fad963c" style="width: 100.0%; height: 100.0%;">Rute FD8</div>`)[0];
+                popup_3f60289a5c06c0d81fab15877bb2e199.setContent(html_c91f9d839113002271dee4d41fad963c);
+            
+        
+
+        poly_line_c4b792dc1812d2eb950ff6948ce06604.bindPopup(popup_3f60289a5c06c0d81fab15877bb2e199)
+        ;
+
+        
+    
+    
+            poly_line_c4b792dc1812d2eb950ff6948ce06604.bindTooltip(
+                `<div>
+                     Rute FD8
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_8340c200558b24364310faa6a1397094 = L.polyline(
+                [[-7.56729936753916, 110.812057143543], [-7.567852615, 110.8146095]],
+                {"bubblingMouseEvents": true, "color": "#FF0000", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF0000", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_54cc09b7b4a43c0130bd81177d460d6a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_a571b4c5270468a409cbd4306d62ddcb = $(`<div id="html_a571b4c5270468a409cbd4306d62ddcb" style="width: 100.0%; height: 100.0%;">Rute FD8</div>`)[0];
+                popup_54cc09b7b4a43c0130bd81177d460d6a.setContent(html_a571b4c5270468a409cbd4306d62ddcb);
+            
+        
+
+        poly_line_8340c200558b24364310faa6a1397094.bindPopup(popup_54cc09b7b4a43c0130bd81177d460d6a)
+        ;
+
+        
+    
+    
+            poly_line_8340c200558b24364310faa6a1397094.bindTooltip(
+                `<div>
+                     Rute FD8
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_2d4ff7a9e49dc33ad2c878775f6f87c5 = L.polyline(
+                [[-7.56729936753916, 110.812057143543], [-7.568829291, 110.8106188]],
+                {"bubblingMouseEvents": true, "color": "#5F27CD", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#5F27CD", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_cccde206050d4f315e2381066a05e26a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_ca261684ad398014d64f08716b18507a = $(`<div id="html_ca261684ad398014d64f08716b18507a" style="width: 100.0%; height: 100.0%;">Rute FD8</div>`)[0];
+                popup_cccde206050d4f315e2381066a05e26a.setContent(html_ca261684ad398014d64f08716b18507a);
+            
+        
+
+        poly_line_2d4ff7a9e49dc33ad2c878775f6f87c5.bindPopup(popup_cccde206050d4f315e2381066a05e26a)
+        ;
+
+        
+    
+    
+            poly_line_2d4ff7a9e49dc33ad2c878775f6f87c5.bindTooltip(
+                `<div>
+                     Rute FD8
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_44f22936d2232a5f9ada8011ac548bc2 = L.polyline(
+                [[-7.56729936753916, 110.812057143543], [-7.564166826, 110.8185673]],
+                {"bubblingMouseEvents": true, "color": "#5F27CD", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#5F27CD", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_11c8254baf94e6d37b897b95c440b8e7 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_f1c43723537dbdb6814cd91ea729e5d9 = $(`<div id="html_f1c43723537dbdb6814cd91ea729e5d9" style="width: 100.0%; height: 100.0%;">Rute FD8</div>`)[0];
+                popup_11c8254baf94e6d37b897b95c440b8e7.setContent(html_f1c43723537dbdb6814cd91ea729e5d9);
+            
+        
+
+        poly_line_44f22936d2232a5f9ada8011ac548bc2.bindPopup(popup_11c8254baf94e6d37b897b95c440b8e7)
+        ;
+
+        
+    
+    
+            poly_line_44f22936d2232a5f9ada8011ac548bc2.bindTooltip(
+                `<div>
+                     Rute FD8
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_76d118e52127f2b4ad527cdc7a0623ca = L.polyline(
+                [[-7.56795480396892, 110.814320671231], [-7.53253942382143, 110.748923594566]],
+                {"bubblingMouseEvents": true, "color": "#FF6B6B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF6B6B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_382017a8436b09c7689c50f142537378 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_162b827f2217058868ad2b40b7f4a993 = $(`<div id="html_162b827f2217058868ad2b40b7f4a993" style="width: 100.0%; height: 100.0%;">Rute K1</div>`)[0];
+                popup_382017a8436b09c7689c50f142537378.setContent(html_162b827f2217058868ad2b40b7f4a993);
+            
+        
+
+        poly_line_76d118e52127f2b4ad527cdc7a0623ca.bindPopup(popup_382017a8436b09c7689c50f142537378)
+        ;
+
+        
+    
+    
+            poly_line_76d118e52127f2b4ad527cdc7a0623ca.bindTooltip(
+                `<div>
+                     Rute K1
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_5e637ba1c0d71bd8cc3e206209e212de = L.polyline(
+                [[-7.56795480396892, 110.814320671231], [-7.568500872, 110.8166443]],
+                {"bubblingMouseEvents": true, "color": "#5F27CD", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#5F27CD", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_4a16eb3748e13ba3293a60812d1d9ea0 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_943d5d1c1382c553f816a998bafadf3e = $(`<div id="html_943d5d1c1382c553f816a998bafadf3e" style="width: 100.0%; height: 100.0%;">Rute FD8</div>`)[0];
+                popup_4a16eb3748e13ba3293a60812d1d9ea0.setContent(html_943d5d1c1382c553f816a998bafadf3e);
+            
+        
+
+        poly_line_5e637ba1c0d71bd8cc3e206209e212de.bindPopup(popup_4a16eb3748e13ba3293a60812d1d9ea0)
+        ;
+
+        
+    
+    
+            poly_line_5e637ba1c0d71bd8cc3e206209e212de.bindTooltip(
+                `<div>
+                     Rute FD8
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_b61e6b8a6da59742da121860e6a17f10 = L.polyline(
+                [[-7.56795480396892, 110.814320671231], [-7.567852615, 110.8146095]],
+                {"bubblingMouseEvents": true, "color": "#5F27CD", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#5F27CD", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_ca69a4626791464cb36746546b438fed = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_691c3a76d3e5d129d094d60ad0448b87 = $(`<div id="html_691c3a76d3e5d129d094d60ad0448b87" style="width: 100.0%; height: 100.0%;">Rute FD8</div>`)[0];
+                popup_ca69a4626791464cb36746546b438fed.setContent(html_691c3a76d3e5d129d094d60ad0448b87);
+            
+        
+
+        poly_line_b61e6b8a6da59742da121860e6a17f10.bindPopup(popup_ca69a4626791464cb36746546b438fed)
+        ;
+
+        
+    
+    
+            poly_line_b61e6b8a6da59742da121860e6a17f10.bindTooltip(
+                `<div>
+                     Rute FD8
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_ed557420704834b0519a10431cba5f9a = L.polyline(
+                [[-7.56795480396892, 110.814320671231], [-7.568829291, 110.8106188]],
+                {"bubblingMouseEvents": true, "color": "#5F27CD", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#5F27CD", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_9160a176117dbae66ae662428ea19cdd = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_fe92fed93d2ce5f5461f3a30eefff664 = $(`<div id="html_fe92fed93d2ce5f5461f3a30eefff664" style="width: 100.0%; height: 100.0%;">Rute FD8</div>`)[0];
+                popup_9160a176117dbae66ae662428ea19cdd.setContent(html_fe92fed93d2ce5f5461f3a30eefff664);
+            
+        
+
+        poly_line_ed557420704834b0519a10431cba5f9a.bindPopup(popup_9160a176117dbae66ae662428ea19cdd)
+        ;
+
+        
+    
+    
+            poly_line_ed557420704834b0519a10431cba5f9a.bindTooltip(
+                `<div>
+                     Rute FD8
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_d2ee13616ea4e793663c02187f9a11f9 = L.polyline(
+                [[-7.56795480396892, 110.814320671231], [-7.564166826, 110.8185673]],
+                {"bubblingMouseEvents": true, "color": "#5F27CD", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#5F27CD", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_549371487e9c6e5978920aa59fffde7f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_f3db37d136d8cb374a315546b7fb5a01 = $(`<div id="html_f3db37d136d8cb374a315546b7fb5a01" style="width: 100.0%; height: 100.0%;">Rute FD8</div>`)[0];
+                popup_549371487e9c6e5978920aa59fffde7f.setContent(html_f3db37d136d8cb374a315546b7fb5a01);
+            
+        
+
+        poly_line_d2ee13616ea4e793663c02187f9a11f9.bindPopup(popup_549371487e9c6e5978920aa59fffde7f)
+        ;
+
+        
+    
+    
+            poly_line_d2ee13616ea4e793663c02187f9a11f9.bindTooltip(
+                `<div>
+                     Rute FD8
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_e27a927dba812961445cf36b8350b554 = L.polyline(
+                [[-7.567581219, 110.7835961], [-7.57140133360988, 110.829647652826]],
+                {"bubblingMouseEvents": true, "color": "#4ECDC4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#4ECDC4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_de06783f4f338a12c3bafdb84183bd82 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_fbe39a7be1000e3d1f242e0762095b55 = $(`<div id="html_fbe39a7be1000e3d1f242e0762095b55" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_de06783f4f338a12c3bafdb84183bd82.setContent(html_fbe39a7be1000e3d1f242e0762095b55);
+            
+        
+
+        poly_line_e27a927dba812961445cf36b8350b554.bindPopup(popup_de06783f4f338a12c3bafdb84183bd82)
+        ;
+
+        
+    
+    
+            poly_line_e27a927dba812961445cf36b8350b554.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_f7f496c4f039e5ec2dab2a69556e3437 = L.polyline(
+                [[-7.567581219, 110.7835961], [-7.56993057310902, 110.830046989632]],
+                {"bubblingMouseEvents": true, "color": "#4ECDC4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#4ECDC4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_71314abc3f9646520b62bfb11bbee80b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_e6382aef9f617ade40f8d036ae1972e5 = $(`<div id="html_e6382aef9f617ade40f8d036ae1972e5" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_71314abc3f9646520b62bfb11bbee80b.setContent(html_e6382aef9f617ade40f8d036ae1972e5);
+            
+        
+
+        poly_line_f7f496c4f039e5ec2dab2a69556e3437.bindPopup(popup_71314abc3f9646520b62bfb11bbee80b)
+        ;
+
+        
+    
+    
+            poly_line_f7f496c4f039e5ec2dab2a69556e3437.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_55ecee20da32360fa31a4a7da5d3dfbb = L.polyline(
+                [[-7.567581219, 110.7835961], [-7.5684698254206, 110.831727375632]],
+                {"bubblingMouseEvents": true, "color": "#4ECDC4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#4ECDC4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_29aaedc45c771785036a96942354b742 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_55399d855b5768e15e82507d3361c59a = $(`<div id="html_55399d855b5768e15e82507d3361c59a" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_29aaedc45c771785036a96942354b742.setContent(html_55399d855b5768e15e82507d3361c59a);
+            
+        
+
+        poly_line_55ecee20da32360fa31a4a7da5d3dfbb.bindPopup(popup_29aaedc45c771785036a96942354b742)
+        ;
+
+        
+    
+    
+            poly_line_55ecee20da32360fa31a4a7da5d3dfbb.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_6a704a316dbe08c6c59762036684cefd = L.polyline(
+                [[-7.567581219, 110.7835961], [-7.55653679470118, 110.852209973442]],
+                {"bubblingMouseEvents": true, "color": "#4ECDC4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#4ECDC4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_a40a87b319731cb550f4d5feeb1732f7 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_22342e6905983e308c34616b300fa512 = $(`<div id="html_22342e6905983e308c34616b300fa512" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_a40a87b319731cb550f4d5feeb1732f7.setContent(html_22342e6905983e308c34616b300fa512);
+            
+        
+
+        poly_line_6a704a316dbe08c6c59762036684cefd.bindPopup(popup_a40a87b319731cb550f4d5feeb1732f7)
+        ;
+
+        
+    
+    
+            poly_line_6a704a316dbe08c6c59762036684cefd.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_339a20b540c4a92def8699cba06f7867 = L.polyline(
+                [[-7.567581219, 110.7835961], [-7.55541900174376, 110.854977935521]],
+                {"bubblingMouseEvents": true, "color": "#4ECDC4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#4ECDC4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_67967efbb5bca00b2a5a43b554eb5e65 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_4d7d5adab39292d0bbcb284d0b2e835b = $(`<div id="html_4d7d5adab39292d0bbcb284d0b2e835b" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_67967efbb5bca00b2a5a43b554eb5e65.setContent(html_4d7d5adab39292d0bbcb284d0b2e835b);
+            
+        
+
+        poly_line_339a20b540c4a92def8699cba06f7867.bindPopup(popup_67967efbb5bca00b2a5a43b554eb5e65)
+        ;
+
+        
+    
+    
+            poly_line_339a20b540c4a92def8699cba06f7867.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_332451af3eb54e601d749e4694fc96c5 = L.polyline(
+                [[-7.567581219, 110.7835961], [-7.55707042819373, 110.860610255225]],
+                {"bubblingMouseEvents": true, "color": "#4ECDC4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#4ECDC4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_d59e7e9f733d7519ee451740cc67ae7b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_66a655b11cc7d23896d5d9078a5305ad = $(`<div id="html_66a655b11cc7d23896d5d9078a5305ad" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_d59e7e9f733d7519ee451740cc67ae7b.setContent(html_66a655b11cc7d23896d5d9078a5305ad);
+            
+        
+
+        poly_line_332451af3eb54e601d749e4694fc96c5.bindPopup(popup_d59e7e9f733d7519ee451740cc67ae7b)
+        ;
+
+        
+    
+    
+            poly_line_332451af3eb54e601d749e4694fc96c5.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_1cfb108fb38587d8c7dcd7bedd110e96 = L.polyline(
+                [[-7.57140133360988, 110.829647652826], [-7.56993057310902, 110.830046989632]],
+                {"bubblingMouseEvents": true, "color": "#4ECDC4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#4ECDC4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_1a3f6de69098f298710b847e5ce80d76 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_1257615a6aa8133223a4be4d33aca8cd = $(`<div id="html_1257615a6aa8133223a4be4d33aca8cd" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_1a3f6de69098f298710b847e5ce80d76.setContent(html_1257615a6aa8133223a4be4d33aca8cd);
+            
+        
+
+        poly_line_1cfb108fb38587d8c7dcd7bedd110e96.bindPopup(popup_1a3f6de69098f298710b847e5ce80d76)
+        ;
+
+        
+    
+    
+            poly_line_1cfb108fb38587d8c7dcd7bedd110e96.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_56ef6c00f37c0ba636724ffc94defc44 = L.polyline(
+                [[-7.57140133360988, 110.829647652826], [-7.5684698254206, 110.831727375632]],
+                {"bubblingMouseEvents": true, "color": "#4ECDC4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#4ECDC4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_ccf37e7bba1e9be7bf42dc453db48a13 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_9b91ce7c0eb6ca7707ec33d11b289733 = $(`<div id="html_9b91ce7c0eb6ca7707ec33d11b289733" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_ccf37e7bba1e9be7bf42dc453db48a13.setContent(html_9b91ce7c0eb6ca7707ec33d11b289733);
+            
+        
+
+        poly_line_56ef6c00f37c0ba636724ffc94defc44.bindPopup(popup_ccf37e7bba1e9be7bf42dc453db48a13)
+        ;
+
+        
+    
+    
+            poly_line_56ef6c00f37c0ba636724ffc94defc44.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_fdc2e802d1664c488dc9062f0ba28308 = L.polyline(
+                [[-7.57140133360988, 110.829647652826], [-7.55653679470118, 110.852209973442]],
+                {"bubblingMouseEvents": true, "color": "#4ECDC4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#4ECDC4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_509799ba52898802e1129fa801dffecf = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_a4feb9ffac1810d3fcf40408654ee53a = $(`<div id="html_a4feb9ffac1810d3fcf40408654ee53a" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_509799ba52898802e1129fa801dffecf.setContent(html_a4feb9ffac1810d3fcf40408654ee53a);
+            
+        
+
+        poly_line_fdc2e802d1664c488dc9062f0ba28308.bindPopup(popup_509799ba52898802e1129fa801dffecf)
+        ;
+
+        
+    
+    
+            poly_line_fdc2e802d1664c488dc9062f0ba28308.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_1cb5ef1ceaf0a21bd59119912502a264 = L.polyline(
+                [[-7.57140133360988, 110.829647652826], [-7.55541900174376, 110.854977935521]],
+                {"bubblingMouseEvents": true, "color": "#4ECDC4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#4ECDC4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_0dfd4994d13c44926f89c34e14239d06 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_3e7e83c5e126676611b70e49a5d8ee9a = $(`<div id="html_3e7e83c5e126676611b70e49a5d8ee9a" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_0dfd4994d13c44926f89c34e14239d06.setContent(html_3e7e83c5e126676611b70e49a5d8ee9a);
+            
+        
+
+        poly_line_1cb5ef1ceaf0a21bd59119912502a264.bindPopup(popup_0dfd4994d13c44926f89c34e14239d06)
+        ;
+
+        
+    
+    
+            poly_line_1cb5ef1ceaf0a21bd59119912502a264.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_5ee523f78efdc4be955ae5359d2cc1b8 = L.polyline(
+                [[-7.57140133360988, 110.829647652826], [-7.55707042819373, 110.860610255225]],
+                {"bubblingMouseEvents": true, "color": "#4ECDC4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#4ECDC4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_d6f4f08f52be81fd0cf5c210d213fe91 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_fa8dbf47629d082168745992ae5c840d = $(`<div id="html_fa8dbf47629d082168745992ae5c840d" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_d6f4f08f52be81fd0cf5c210d213fe91.setContent(html_fa8dbf47629d082168745992ae5c840d);
+            
+        
+
+        poly_line_5ee523f78efdc4be955ae5359d2cc1b8.bindPopup(popup_d6f4f08f52be81fd0cf5c210d213fe91)
+        ;
+
+        
+    
+    
+            poly_line_5ee523f78efdc4be955ae5359d2cc1b8.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_de3a5379c883f86fc309e639481cf3df = L.polyline(
+                [[-7.56993057310902, 110.830046989632], [-7.5684698254206, 110.831727375632]],
+                {"bubblingMouseEvents": true, "color": "#FF0000", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF0000", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_02e1a2bf473483b2abdb54c0dac83df5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_9bd43288dc86aa9587c5d17c1eecd304 = $(`<div id="html_9bd43288dc86aa9587c5d17c1eecd304" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_02e1a2bf473483b2abdb54c0dac83df5.setContent(html_9bd43288dc86aa9587c5d17c1eecd304);
+            
+        
+
+        poly_line_de3a5379c883f86fc309e639481cf3df.bindPopup(popup_02e1a2bf473483b2abdb54c0dac83df5)
+        ;
+
+        
+    
+    
+            poly_line_de3a5379c883f86fc309e639481cf3df.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_ac61045949994941ed65f728512df72c = L.polyline(
+                [[-7.56993057310902, 110.830046989632], [-7.55653679470118, 110.852209973442]],
+                {"bubblingMouseEvents": true, "color": "#4ECDC4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#4ECDC4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_1ec70e33aa1e15b3fcce9385cc2600fc = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_c0d2b4c3aa3fa1340016cb21f6e9a6b8 = $(`<div id="html_c0d2b4c3aa3fa1340016cb21f6e9a6b8" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_1ec70e33aa1e15b3fcce9385cc2600fc.setContent(html_c0d2b4c3aa3fa1340016cb21f6e9a6b8);
+            
+        
+
+        poly_line_ac61045949994941ed65f728512df72c.bindPopup(popup_1ec70e33aa1e15b3fcce9385cc2600fc)
+        ;
+
+        
+    
+    
+            poly_line_ac61045949994941ed65f728512df72c.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_a0e21ab08ba0067f74ee4ed33166dfe7 = L.polyline(
+                [[-7.56993057310902, 110.830046989632], [-7.55541900174376, 110.854977935521]],
+                {"bubblingMouseEvents": true, "color": "#4ECDC4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#4ECDC4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_444405fa9866e8663b9b90b4f589cf33 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_b18be9b7e1e5a5b903231c5840e4410a = $(`<div id="html_b18be9b7e1e5a5b903231c5840e4410a" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_444405fa9866e8663b9b90b4f589cf33.setContent(html_b18be9b7e1e5a5b903231c5840e4410a);
+            
+        
+
+        poly_line_a0e21ab08ba0067f74ee4ed33166dfe7.bindPopup(popup_444405fa9866e8663b9b90b4f589cf33)
+        ;
+
+        
+    
+    
+            poly_line_a0e21ab08ba0067f74ee4ed33166dfe7.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_5e9f24c4cb1d0ac9050444cf9cb312dc = L.polyline(
+                [[-7.56993057310902, 110.830046989632], [-7.55707042819373, 110.860610255225]],
+                {"bubblingMouseEvents": true, "color": "#4ECDC4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#4ECDC4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_ac38dc725f810c5ee9708f4c14bf7356 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_601234fcf3d7a0846f8f0af89fd7fdb5 = $(`<div id="html_601234fcf3d7a0846f8f0af89fd7fdb5" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_ac38dc725f810c5ee9708f4c14bf7356.setContent(html_601234fcf3d7a0846f8f0af89fd7fdb5);
+            
+        
+
+        poly_line_5e9f24c4cb1d0ac9050444cf9cb312dc.bindPopup(popup_ac38dc725f810c5ee9708f4c14bf7356)
+        ;
+
+        
+    
+    
+            poly_line_5e9f24c4cb1d0ac9050444cf9cb312dc.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_87191549fe175f969a51ca7c7794643e = L.polyline(
+                [[-7.56993057310902, 110.830046989632], [-7.567852615, 110.8146095]],
+                {"bubblingMouseEvents": true, "color": "#FF0000", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF0000", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1.0, "smoothFactor": 1.0, "stroke": true, "weight": 6}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_ff0d27987e8b716415205b1fc6d993ee = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_cc0f5534ee840cc299bb8fe920407b3a = $(`<div id="html_cc0f5534ee840cc299bb8fe920407b3a" style="width: 100.0%; height: 100.0%;">Rute FD2</div>`)[0];
+                popup_ff0d27987e8b716415205b1fc6d993ee.setContent(html_cc0f5534ee840cc299bb8fe920407b3a);
+            
+        
+
+        poly_line_87191549fe175f969a51ca7c7794643e.bindPopup(popup_ff0d27987e8b716415205b1fc6d993ee)
+        ;
+
+        
+    
+    
+            poly_line_87191549fe175f969a51ca7c7794643e.bindTooltip(
+                `<div>
+                     Rute FD2
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_d1321f12e10ca33f4d3430e61b337289 = L.polyline(
+                [[-7.5684698254206, 110.831727375632], [-7.55653679470118, 110.852209973442]],
+                {"bubblingMouseEvents": true, "color": "#4ECDC4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#4ECDC4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_2efd5db2dc154f15f74a546a705003c5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_b74ff009ff7c5d196b706387b17ea840 = $(`<div id="html_b74ff009ff7c5d196b706387b17ea840" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_2efd5db2dc154f15f74a546a705003c5.setContent(html_b74ff009ff7c5d196b706387b17ea840);
+            
+        
+
+        poly_line_d1321f12e10ca33f4d3430e61b337289.bindPopup(popup_2efd5db2dc154f15f74a546a705003c5)
+        ;
+
+        
+    
+    
+            poly_line_d1321f12e10ca33f4d3430e61b337289.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_a4acf1ef3be97893edea1a393f830377 = L.polyline(
+                [[-7.5684698254206, 110.831727375632], [-7.55541900174376, 110.854977935521]],
+                {"bubblingMouseEvents": true, "color": "#4ECDC4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#4ECDC4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_c31fcce0c8fc0df603947c3f21a1025e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_535902d915488bed2d8b912ce0234ba9 = $(`<div id="html_535902d915488bed2d8b912ce0234ba9" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_c31fcce0c8fc0df603947c3f21a1025e.setContent(html_535902d915488bed2d8b912ce0234ba9);
+            
+        
+
+        poly_line_a4acf1ef3be97893edea1a393f830377.bindPopup(popup_c31fcce0c8fc0df603947c3f21a1025e)
+        ;
+
+        
+    
+    
+            poly_line_a4acf1ef3be97893edea1a393f830377.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_e67c9266e114e063ac7bad8709ef278e = L.polyline(
+                [[-7.5684698254206, 110.831727375632], [-7.55707042819373, 110.860610255225]],
+                {"bubblingMouseEvents": true, "color": "#4ECDC4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#4ECDC4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_151b35dcb78cb69ea6d72bcdc0256f77 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_0ecbfffd9c489375284ac949c2baa904 = $(`<div id="html_0ecbfffd9c489375284ac949c2baa904" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_151b35dcb78cb69ea6d72bcdc0256f77.setContent(html_0ecbfffd9c489375284ac949c2baa904);
+            
+        
+
+        poly_line_e67c9266e114e063ac7bad8709ef278e.bindPopup(popup_151b35dcb78cb69ea6d72bcdc0256f77)
+        ;
+
+        
+    
+    
+            poly_line_e67c9266e114e063ac7bad8709ef278e.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_ecdf8bb01504f7a9fb4e867120034af7 = L.polyline(
+                [[-7.55653679470118, 110.852209973442], [-7.55541900174376, 110.854977935521]],
+                {"bubblingMouseEvents": true, "color": "#4ECDC4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#4ECDC4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_fae32a9216101048177dfa9e6bb81ea7 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_1cbdd5927d72f5f1433b3bc3188dedc3 = $(`<div id="html_1cbdd5927d72f5f1433b3bc3188dedc3" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_fae32a9216101048177dfa9e6bb81ea7.setContent(html_1cbdd5927d72f5f1433b3bc3188dedc3);
+            
+        
+
+        poly_line_ecdf8bb01504f7a9fb4e867120034af7.bindPopup(popup_fae32a9216101048177dfa9e6bb81ea7)
+        ;
+
+        
+    
+    
+            poly_line_ecdf8bb01504f7a9fb4e867120034af7.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_ebf6a64f6f33e2f5b3a3522800517b24 = L.polyline(
+                [[-7.55653679470118, 110.852209973442], [-7.55707042819373, 110.860610255225]],
+                {"bubblingMouseEvents": true, "color": "#4ECDC4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#4ECDC4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_f794ae30a8581ceed3340773e41446f0 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_9bb39648af39df71e8f120d7de14f7b2 = $(`<div id="html_9bb39648af39df71e8f120d7de14f7b2" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_f794ae30a8581ceed3340773e41446f0.setContent(html_9bb39648af39df71e8f120d7de14f7b2);
+            
+        
+
+        poly_line_ebf6a64f6f33e2f5b3a3522800517b24.bindPopup(popup_f794ae30a8581ceed3340773e41446f0)
+        ;
+
+        
+    
+    
+            poly_line_ebf6a64f6f33e2f5b3a3522800517b24.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_c62fb5906eca3578858f77208bb185e6 = L.polyline(
+                [[-7.55541900174376, 110.854977935521], [-7.55707042819373, 110.860610255225]],
+                {"bubblingMouseEvents": true, "color": "#4ECDC4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#4ECDC4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_cab5f93ae0f9dd571149b1f242bef20f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_bc09ab14ad2f6d04d879438a461493a0 = $(`<div id="html_bc09ab14ad2f6d04d879438a461493a0" style="width: 100.0%; height: 100.0%;">Rute K3</div>`)[0];
+                popup_cab5f93ae0f9dd571149b1f242bef20f.setContent(html_bc09ab14ad2f6d04d879438a461493a0);
+            
+        
+
+        poly_line_c62fb5906eca3578858f77208bb185e6.bindPopup(popup_cab5f93ae0f9dd571149b1f242bef20f)
+        ;
+
+        
+    
+    
+            poly_line_c62fb5906eca3578858f77208bb185e6.bindTooltip(
+                `<div>
+                     Rute K3
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_8f0499ef2eefe2a2879922b1d65958a7 = L.polyline(
+                [[-7.532634345, 110.7487969], [-7.556663684, 110.8048193]],
+                {"bubblingMouseEvents": true, "color": "#45B7D1", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#45B7D1", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_dfb882b99f8d64f2c4b8074d750c88d9 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_46b20d42594cc195fa64d9e037396edc = $(`<div id="html_46b20d42594cc195fa64d9e037396edc" style="width: 100.0%; height: 100.0%;">Rute K4</div>`)[0];
+                popup_dfb882b99f8d64f2c4b8074d750c88d9.setContent(html_46b20d42594cc195fa64d9e037396edc);
+            
+        
+
+        poly_line_8f0499ef2eefe2a2879922b1d65958a7.bindPopup(popup_dfb882b99f8d64f2c4b8074d750c88d9)
+        ;
+
+        
+    
+    
+            poly_line_8f0499ef2eefe2a2879922b1d65958a7.bindTooltip(
+                `<div>
+                     Rute K4
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_b9293a04adffbe0ae02274b0911e5957 = L.polyline(
+                [[-7.532634345, 110.7487969], [-7.551298569, 110.8182099]],
+                {"bubblingMouseEvents": true, "color": "#45B7D1", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#45B7D1", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_efc509b2c39cdabbc53e3b4ceba903e5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_92424d7b0986db2f76b0ddb46e8cc06c = $(`<div id="html_92424d7b0986db2f76b0ddb46e8cc06c" style="width: 100.0%; height: 100.0%;">Rute K4</div>`)[0];
+                popup_efc509b2c39cdabbc53e3b4ceba903e5.setContent(html_92424d7b0986db2f76b0ddb46e8cc06c);
+            
+        
+
+        poly_line_b9293a04adffbe0ae02274b0911e5957.bindPopup(popup_efc509b2c39cdabbc53e3b4ceba903e5)
+        ;
+
+        
+    
+    
+            poly_line_b9293a04adffbe0ae02274b0911e5957.bindTooltip(
+                `<div>
+                     Rute K4
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_bab4857222ff24042389467b49ee703c = L.polyline(
+                [[-7.556663684, 110.8048193], [-7.551298569, 110.8182099]],
+                {"bubblingMouseEvents": true, "color": "#45B7D1", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#45B7D1", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_2bb2b07bbeecf3d2e4cc37e05f898a6d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_7a85ef4eb6e8ac8dc9d83d30ce58e3e6 = $(`<div id="html_7a85ef4eb6e8ac8dc9d83d30ce58e3e6" style="width: 100.0%; height: 100.0%;">Rute K4</div>`)[0];
+                popup_2bb2b07bbeecf3d2e4cc37e05f898a6d.setContent(html_7a85ef4eb6e8ac8dc9d83d30ce58e3e6);
+            
+        
+
+        poly_line_bab4857222ff24042389467b49ee703c.bindPopup(popup_2bb2b07bbeecf3d2e4cc37e05f898a6d)
+        ;
+
+        
+    
+    
+            poly_line_bab4857222ff24042389467b49ee703c.bindTooltip(
+                `<div>
+                     Rute K4
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_09b0e19d9fcb72223fe782f79d854b1c = L.polyline(
+                [[-7.551298569, 110.8182099], [-7.569086355, 110.8221284]],
+                {"bubblingMouseEvents": true, "color": "#FECA57", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FECA57", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_41d1a92dbd37507c6bee3fe5de6137cd = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_4cd3ddfb90b5468ca0a08a5336a39eaa = $(`<div id="html_4cd3ddfb90b5468ca0a08a5336a39eaa" style="width: 100.0%; height: 100.0%;">Rute K6</div>`)[0];
+                popup_41d1a92dbd37507c6bee3fe5de6137cd.setContent(html_4cd3ddfb90b5468ca0a08a5336a39eaa);
+            
+        
+
+        poly_line_09b0e19d9fcb72223fe782f79d854b1c.bindPopup(popup_41d1a92dbd37507c6bee3fe5de6137cd)
+        ;
+
+        
+    
+    
+            poly_line_09b0e19d9fcb72223fe782f79d854b1c.bindTooltip(
+                `<div>
+                     Rute K6
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_67731bc4b90d69db9ee0fa40483a2fca = L.polyline(
+                [[-7.551298569, 110.8182099], [-7.571950677, 110.8166645]],
+                {"bubblingMouseEvents": true, "color": "#FECA57", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FECA57", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_8ad2bcb1157c682ac0d271722932e766 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_a712e4bca6872f39d7ee675393ae0eb9 = $(`<div id="html_a712e4bca6872f39d7ee675393ae0eb9" style="width: 100.0%; height: 100.0%;">Rute K6</div>`)[0];
+                popup_8ad2bcb1157c682ac0d271722932e766.setContent(html_a712e4bca6872f39d7ee675393ae0eb9);
+            
+        
+
+        poly_line_67731bc4b90d69db9ee0fa40483a2fca.bindPopup(popup_8ad2bcb1157c682ac0d271722932e766)
+        ;
+
+        
+    
+    
+            poly_line_67731bc4b90d69db9ee0fa40483a2fca.bindTooltip(
+                `<div>
+                     Rute K6
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_ad0381b446e800ee6d09bfe8262034ff = L.polyline(
+                [[-7.568500872, 110.8166443], [-7.567047482, 110.8118452]],
+                {"bubblingMouseEvents": true, "color": "#96CEB4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#96CEB4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_231b24e912362450374ce97bcf1b5e67 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_d48d6c6755bed1be4e080cb603f2d51e = $(`<div id="html_d48d6c6755bed1be4e080cb603f2d51e" style="width: 100.0%; height: 100.0%;">Rute K5</div>`)[0];
+                popup_231b24e912362450374ce97bcf1b5e67.setContent(html_d48d6c6755bed1be4e080cb603f2d51e);
+            
+        
+
+        poly_line_ad0381b446e800ee6d09bfe8262034ff.bindPopup(popup_231b24e912362450374ce97bcf1b5e67)
+        ;
+
+        
+    
+    
+            poly_line_ad0381b446e800ee6d09bfe8262034ff.bindTooltip(
+                `<div>
+                     Rute K5
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_080c55e39470fdabf9da2e193b8c9606 = L.polyline(
+                [[-7.568500872, 110.8166443], [-7.53171343, 110.7473448]],
+                {"bubblingMouseEvents": true, "color": "#96CEB4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#96CEB4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_36fdb73df9e9f1cd753648c0af2d42ad = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_a94d8efe080c8b59d8bde3587e9f97bb = $(`<div id="html_a94d8efe080c8b59d8bde3587e9f97bb" style="width: 100.0%; height: 100.0%;">Rute K5</div>`)[0];
+                popup_36fdb73df9e9f1cd753648c0af2d42ad.setContent(html_a94d8efe080c8b59d8bde3587e9f97bb);
+            
+        
+
+        poly_line_080c55e39470fdabf9da2e193b8c9606.bindPopup(popup_36fdb73df9e9f1cd753648c0af2d42ad)
+        ;
+
+        
+    
+    
+            poly_line_080c55e39470fdabf9da2e193b8c9606.bindTooltip(
+                `<div>
+                     Rute K5
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_9b5486a7cdabc0cff6a3173c3b3d8a1d = L.polyline(
+                [[-7.568500872, 110.8166443], [-7.567852615, 110.8146095]],
+                {"bubblingMouseEvents": true, "color": "#5F27CD", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#5F27CD", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_6d76d3e42b29dd7ddbeb8c47f5967e67 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_e6b49ac80031819523ce564ddc4cb0b7 = $(`<div id="html_e6b49ac80031819523ce564ddc4cb0b7" style="width: 100.0%; height: 100.0%;">Rute FD8</div>`)[0];
+                popup_6d76d3e42b29dd7ddbeb8c47f5967e67.setContent(html_e6b49ac80031819523ce564ddc4cb0b7);
+            
+        
+
+        poly_line_9b5486a7cdabc0cff6a3173c3b3d8a1d.bindPopup(popup_6d76d3e42b29dd7ddbeb8c47f5967e67)
+        ;
+
+        
+    
+    
+            poly_line_9b5486a7cdabc0cff6a3173c3b3d8a1d.bindTooltip(
+                `<div>
+                     Rute FD8
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_3be493ccbb7c0028427424668866a0bf = L.polyline(
+                [[-7.568500872, 110.8166443], [-7.568829291, 110.8106188]],
+                {"bubblingMouseEvents": true, "color": "#5F27CD", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#5F27CD", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_1020a69e013351e1c8e087a7eb516254 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_c2c1c95bb8cde6706fe79d7e1f3b9c4c = $(`<div id="html_c2c1c95bb8cde6706fe79d7e1f3b9c4c" style="width: 100.0%; height: 100.0%;">Rute FD8</div>`)[0];
+                popup_1020a69e013351e1c8e087a7eb516254.setContent(html_c2c1c95bb8cde6706fe79d7e1f3b9c4c);
+            
+        
+
+        poly_line_3be493ccbb7c0028427424668866a0bf.bindPopup(popup_1020a69e013351e1c8e087a7eb516254)
+        ;
+
+        
+    
+    
+            poly_line_3be493ccbb7c0028427424668866a0bf.bindTooltip(
+                `<div>
+                     Rute FD8
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_7c279de05067eaf4d83777ca51ddb0db = L.polyline(
+                [[-7.568500872, 110.8166443], [-7.564166826, 110.8185673]],
+                {"bubblingMouseEvents": true, "color": "#5F27CD", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#5F27CD", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_a332031bae32c12bf839e989e2fc983f = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_a99b84c76ee83eaf8aa2886b8ea3409f = $(`<div id="html_a99b84c76ee83eaf8aa2886b8ea3409f" style="width: 100.0%; height: 100.0%;">Rute FD8</div>`)[0];
+                popup_a332031bae32c12bf839e989e2fc983f.setContent(html_a99b84c76ee83eaf8aa2886b8ea3409f);
+            
+        
+
+        poly_line_7c279de05067eaf4d83777ca51ddb0db.bindPopup(popup_a332031bae32c12bf839e989e2fc983f)
+        ;
+
+        
+    
+    
+            poly_line_7c279de05067eaf4d83777ca51ddb0db.bindTooltip(
+                `<div>
+                     Rute FD8
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_727780f9906e4cb612e95f3b9dbc58b8 = L.polyline(
+                [[-7.567047482, 110.8118452], [-7.53171343, 110.7473448]],
+                {"bubblingMouseEvents": true, "color": "#96CEB4", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#96CEB4", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_b571d53ed0960e9b26097f012d08f8f0 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_9b9a253ca8b31b900fd0f6ec80fd695b = $(`<div id="html_9b9a253ca8b31b900fd0f6ec80fd695b" style="width: 100.0%; height: 100.0%;">Rute K5</div>`)[0];
+                popup_b571d53ed0960e9b26097f012d08f8f0.setContent(html_9b9a253ca8b31b900fd0f6ec80fd695b);
+            
+        
+
+        poly_line_727780f9906e4cb612e95f3b9dbc58b8.bindPopup(popup_b571d53ed0960e9b26097f012d08f8f0)
+        ;
+
+        
+    
+    
+            poly_line_727780f9906e4cb612e95f3b9dbc58b8.bindTooltip(
+                `<div>
+                     Rute K5
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_8647cfa287f344ec284f9f371d293b30 = L.polyline(
+                [[-7.569086355, 110.8221284], [-7.571950677, 110.8166645]],
+                {"bubblingMouseEvents": true, "color": "#FECA57", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FECA57", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_4baa9e311d1eb4a4a76c4dbceaad8d49 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_5a97e4808efee3f293bd9f73c587530e = $(`<div id="html_5a97e4808efee3f293bd9f73c587530e" style="width: 100.0%; height: 100.0%;">Rute K6</div>`)[0];
+                popup_4baa9e311d1eb4a4a76c4dbceaad8d49.setContent(html_5a97e4808efee3f293bd9f73c587530e);
+            
+        
+
+        poly_line_8647cfa287f344ec284f9f371d293b30.bindPopup(popup_4baa9e311d1eb4a4a76c4dbceaad8d49)
+        ;
+
+        
+    
+    
+            poly_line_8647cfa287f344ec284f9f371d293b30.bindTooltip(
+                `<div>
+                     Rute K6
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_bd235cb614f50361bd30c9decf107962 = L.polyline(
+                [[-7.567852615, 110.8146095], [-7.568829291, 110.8106188]],
+                {"bubblingMouseEvents": true, "color": "#5F27CD", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#5F27CD", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_58971440ea41211fe413ec5b1376f5a1 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_217f465a5b056b0de268a8dd00e7b58f = $(`<div id="html_217f465a5b056b0de268a8dd00e7b58f" style="width: 100.0%; height: 100.0%;">Rute FD8</div>`)[0];
+                popup_58971440ea41211fe413ec5b1376f5a1.setContent(html_217f465a5b056b0de268a8dd00e7b58f);
+            
+        
+
+        poly_line_bd235cb614f50361bd30c9decf107962.bindPopup(popup_58971440ea41211fe413ec5b1376f5a1)
+        ;
+
+        
+    
+    
+            poly_line_bd235cb614f50361bd30c9decf107962.bindTooltip(
+                `<div>
+                     Rute FD8
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_ed9f36905a33a0ebc8bdee62eb7ec58a = L.polyline(
+                [[-7.567852615, 110.8146095], [-7.564166826, 110.8185673]],
+                {"bubblingMouseEvents": true, "color": "#5F27CD", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#5F27CD", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_d6456e930feb931fa9e0353e2eb95b05 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_0053e2052d043d95562c18669f4afc1e = $(`<div id="html_0053e2052d043d95562c18669f4afc1e" style="width: 100.0%; height: 100.0%;">Rute FD8</div>`)[0];
+                popup_d6456e930feb931fa9e0353e2eb95b05.setContent(html_0053e2052d043d95562c18669f4afc1e);
+            
+        
+
+        poly_line_ed9f36905a33a0ebc8bdee62eb7ec58a.bindPopup(popup_d6456e930feb931fa9e0353e2eb95b05)
+        ;
+
+        
+    
+    
+            poly_line_ed9f36905a33a0ebc8bdee62eb7ec58a.bindTooltip(
+                `<div>
+                     Rute FD8
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_55c49196a14e2fef350bbfbd928092d1 = L.polyline(
+                [[-7.568829291, 110.8106188], [-7.564166826, 110.8185673]],
+                {"bubblingMouseEvents": true, "color": "#5F27CD", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#5F27CD", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_952e3801551986526383bcb1e735b6d3 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_cc8e024385d02999ccb6c8a0192c4069 = $(`<div id="html_cc8e024385d02999ccb6c8a0192c4069" style="width: 100.0%; height: 100.0%;">Rute FD8</div>`)[0];
+                popup_952e3801551986526383bcb1e735b6d3.setContent(html_cc8e024385d02999ccb6c8a0192c4069);
+            
+        
+
+        poly_line_55c49196a14e2fef350bbfbd928092d1.bindPopup(popup_952e3801551986526383bcb1e735b6d3)
+        ;
+
+        
+    
+    
+            poly_line_55c49196a14e2fef350bbfbd928092d1.bindTooltip(
+                `<div>
+                     Rute FD8
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_e339b8d4566d78422451241727a5c8c9 = L.polyline(
+                [[-7.567624751, 110.8220978], [-7.564166826, 110.8185673]],
+                {"bubblingMouseEvents": true, "color": "#00D2D3", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#00D2D3", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_9641522d95785731610ba85864f4f624 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_f25f1cb0556e81a4401afde0adbc7f8e = $(`<div id="html_f25f1cb0556e81a4401afde0adbc7f8e" style="width: 100.0%; height: 100.0%;">Rute FD9</div>`)[0];
+                popup_9641522d95785731610ba85864f4f624.setContent(html_f25f1cb0556e81a4401afde0adbc7f8e);
+            
+        
+
+        poly_line_e339b8d4566d78422451241727a5c8c9.bindPopup(popup_9641522d95785731610ba85864f4f624)
+        ;
+
+        
+    
+    
+            poly_line_e339b8d4566d78422451241727a5c8c9.bindTooltip(
+                `<div>
+                     Rute FD9
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var poly_line_6bef6ebf427b36198a002b0177df8877 = L.polyline(
+                [[-7.575037806, 110.8264383], [-7.567996022, 110.8582507]],
+                {"bubblingMouseEvents": true, "color": "#FF9F43", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#FF9F43", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_67bfda5e9d6934ee631ffc8e1f4a51be = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_8861d098d1613a788f461e2ad11963ae = $(`<div id="html_8861d098d1613a788f461e2ad11963ae" style="width: 100.0%; height: 100.0%;">Rute FD10</div>`)[0];
+                popup_67bfda5e9d6934ee631ffc8e1f4a51be.setContent(html_8861d098d1613a788f461e2ad11963ae);
+            
+        
+
+        poly_line_6bef6ebf427b36198a002b0177df8877.bindPopup(popup_67bfda5e9d6934ee631ffc8e1f4a51be)
+        ;
+
+        
+    
+    
+            poly_line_6bef6ebf427b36198a002b0177df8877.bindTooltip(
+                `<div>
+                     Rute FD10
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_83e79f446fb4be1cee85912b4d7fcdbc = L.circleMarker(
+                [-7.564391741, 110.8586613],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_93123be96645f4f528fa8ff162bac6f2 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_d87fd0af9b98a4171066d27571cf853f = $(`<div id="html_d87fd0af9b98a4171066d27571cf853f" style="width: 100.0%; height: 100.0%;"><b>Solo Safari</b><br>Jam: 08:30 - 16:30<br>Biaya: weekday: Rp45,000 (child), Rp55,000 (adult); weekend: Rp60,000 (child), Rp75,000 (adult)</div>`)[0];
+                popup_93123be96645f4f528fa8ff162bac6f2.setContent(html_d87fd0af9b98a4171066d27571cf853f);
+            
+        
+
+        circle_marker_83e79f446fb4be1cee85912b4d7fcdbc.bindPopup(popup_93123be96645f4f528fa8ff162bac6f2)
+        ;
+
+        
+    
+    
+            circle_marker_83e79f446fb4be1cee85912b4d7fcdbc.bindTooltip(
+                `<div>
+                     Solo Safari
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_473bdc138d84f49fba1bb314597b5926 = L.circleMarker(
+                [-7.561172246, 110.8581931],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_6517a5eaf3768855a368f2c361a80de5 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_5f3001aaf1f1cfbe5e05392ffa2c95c6 = $(`<div id="html_5f3001aaf1f1cfbe5e05392ffa2c95c6" style="width: 100.0%; height: 100.0%;"><b>Danau UNS</b><br>Jam: 24 jam<br>Biaya: Free</div>`)[0];
+                popup_6517a5eaf3768855a368f2c361a80de5.setContent(html_5f3001aaf1f1cfbe5e05392ffa2c95c6);
+            
+        
+
+        circle_marker_473bdc138d84f49fba1bb314597b5926.bindPopup(popup_6517a5eaf3768855a368f2c361a80de5)
+        ;
+
+        
+    
+    
+            circle_marker_473bdc138d84f49fba1bb314597b5926.bindTooltip(
+                `<div>
+                     Danau UNS
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d3f6f3344e138f4dc118a2995340fa5b = L.circleMarker(
+                [-7.571804006, 110.8307858],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_5fc39013d756e8673972c7a7930b3617 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_81bf5d16a3cb2b18b1e10a0631d49d6c = $(`<div id="html_81bf5d16a3cb2b18b1e10a0631d49d6c" style="width: 100.0%; height: 100.0%;"><b>Benteng Vastenburg</b><br>Jam: 24 jam<br>Biaya: Free</div>`)[0];
+                popup_5fc39013d756e8673972c7a7930b3617.setContent(html_81bf5d16a3cb2b18b1e10a0631d49d6c);
+            
+        
+
+        circle_marker_d3f6f3344e138f4dc118a2995340fa5b.bindPopup(popup_5fc39013d756e8673972c7a7930b3617)
+        ;
+
+        
+    
+    
+            circle_marker_d3f6f3344e138f4dc118a2995340fa5b.bindTooltip(
+                `<div>
+                     Benteng Vastenburg
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cd933a727bcd000b5b49a63d970a6c03 = L.circleMarker(
+                [-7.573215566, 110.8263633],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_84ca6ac8f568f7a6dde95a5f66bb4eeb = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_7c083a7205da7b97999ffbb225fecf8e = $(`<div id="html_7c083a7205da7b97999ffbb225fecf8e" style="width: 100.0%; height: 100.0%;"><b>Kampung Wisata Batik Kauman</b><br>Jam: 09:00 - 18:00 (weekday), 08:00 - 18:00 (weekend)<br>Biaya: Free</div>`)[0];
+                popup_84ca6ac8f568f7a6dde95a5f66bb4eeb.setContent(html_7c083a7205da7b97999ffbb225fecf8e);
+            
+        
+
+        circle_marker_cd933a727bcd000b5b49a63d970a6c03.bindPopup(popup_84ca6ac8f568f7a6dde95a5f66bb4eeb)
+        ;
+
+        
+    
+    
+            circle_marker_cd933a727bcd000b5b49a63d970a6c03.bindTooltip(
+                `<div>
+                     Kampung Wisata Batik Kauman
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a576d1618c7be24952c736da05af1f03 = L.circleMarker(
+                [-7.568984669, 110.8225384],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_3240b626dbe940149e63b05f577e93a4 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_0fe6fd11490685a8cb6de3a53a9b13db = $(`<div id="html_0fe6fd11490685a8cb6de3a53a9b13db" style="width: 100.0%; height: 100.0%;"><b>Pasar Triwindu</b><br>Jam: 09:00 - 16:00<br>Biaya: Free</div>`)[0];
+                popup_3240b626dbe940149e63b05f577e93a4.setContent(html_0fe6fd11490685a8cb6de3a53a9b13db);
+            
+        
+
+        circle_marker_a576d1618c7be24952c736da05af1f03.bindPopup(popup_3240b626dbe940149e63b05f577e93a4)
+        ;
+
+        
+    
+    
+            circle_marker_a576d1618c7be24952c736da05af1f03.bindTooltip(
+                `<div>
+                     Pasar Triwindu
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_64279ba75000e96651263a66ae84428a = L.circleMarker(
+                [-7.568224905, 110.8129629],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_0bee8a0e8930c2867ad90e0a16ecebc8 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_bb93efb6557b474a609c6ac2a27f9684 = $(`<div id="html_bb93efb6557b474a609c6ac2a27f9684" style="width: 100.0%; height: 100.0%;"><b>Taman Sriwedari</b><br>Jam: 24 jam<br>Biaya: Free</div>`)[0];
+                popup_0bee8a0e8930c2867ad90e0a16ecebc8.setContent(html_bb93efb6557b474a609c6ac2a27f9684);
+            
+        
+
+        circle_marker_64279ba75000e96651263a66ae84428a.bindPopup(popup_0bee8a0e8930c2867ad90e0a16ecebc8)
+        ;
+
+        
+    
+    
+            circle_marker_64279ba75000e96651263a66ae84428a.bindTooltip(
+                `<div>
+                     Taman Sriwedari
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ba53b580bf5978fc06b6c954b84ab8d2 = L.circleMarker(
+                [-7.533922576, 110.7498663],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_ba4a45a506e6c73af3ef4f0a3f5e6d1a = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_3ad671bd6e8501bcb2c7620889fd6743 = $(`<div id="html_3ad671bd6e8501bcb2c7620889fd6743" style="width: 100.0%; height: 100.0%;"><b>De Tjolomadoe</b><br>Jam: 09:00 - 17:00<br>Biaya: Rp40,000</div>`)[0];
+                popup_ba4a45a506e6c73af3ef4f0a3f5e6d1a.setContent(html_3ad671bd6e8501bcb2c7620889fd6743);
+            
+        
+
+        circle_marker_ba53b580bf5978fc06b6c954b84ab8d2.bindPopup(popup_ba4a45a506e6c73af3ef4f0a3f5e6d1a)
+        ;
+
+        
+    
+    
+            circle_marker_ba53b580bf5978fc06b6c954b84ab8d2.bindTooltip(
+                `<div>
+                     De Tjolomadoe
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d7708d9ecd46de6019ee420db5996998 = L.circleMarker(
+                [-7.5691203, 110.7831005],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_5eccd4283b4c352cc2557423b4b0090b = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_4030a6aea97780fb53c7b3a834ef21ba = $(`<div id="html_4030a6aea97780fb53c7b3a834ef21ba" style="width: 100.0%; height: 100.0%;"><b>Lapangan Makamhaji</b><br>Jam: 24 jam<br>Biaya: Free</div>`)[0];
+                popup_5eccd4283b4c352cc2557423b4b0090b.setContent(html_4030a6aea97780fb53c7b3a834ef21ba);
+            
+        
+
+        circle_marker_d7708d9ecd46de6019ee420db5996998.bindPopup(popup_5eccd4283b4c352cc2557423b4b0090b)
+        ;
+
+        
+    
+    
+            circle_marker_d7708d9ecd46de6019ee420db5996998.bindTooltip(
+                `<div>
+                     Lapangan Makamhaji
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_65195ac00007b98b76cb1a7c31868383 = L.circleMarker(
+                [-7.569192352, 110.8296584],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_1ca85b511e11ef6a731e9db2ffbc5b73 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_9dd11492f92332a442303f9df05a4d5a = $(`<div id="html_9dd11492f92332a442303f9df05a4d5a" style="width: 100.0%; height: 100.0%;"><b>Balaikota Surakarta</b><br>Jam: 24 jam<br>Biaya: Free</div>`)[0];
+                popup_1ca85b511e11ef6a731e9db2ffbc5b73.setContent(html_9dd11492f92332a442303f9df05a4d5a);
+            
+        
+
+        circle_marker_65195ac00007b98b76cb1a7c31868383.bindPopup(popup_1ca85b511e11ef6a731e9db2ffbc5b73)
+        ;
+
+        
+    
+    
+            circle_marker_65195ac00007b98b76cb1a7c31868383.bindTooltip(
+                `<div>
+                     Balaikota Surakarta
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_96d2cfb154c31e36bcff3efb02b9621c = L.circleMarker(
+                [-7.569143893, 110.8314553],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_9b119be88882a4bdea29a4a4f81c6c7e = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_5de49cbb6ff8c28a0ce2f14d4e52d2b4 = $(`<div id="html_5de49cbb6ff8c28a0ce2f14d4e52d2b4" style="width: 100.0%; height: 100.0%;"><b>Pasar Gede</b><br>Jam: 24 jam<br>Biaya: Free</div>`)[0];
+                popup_9b119be88882a4bdea29a4a4f81c6c7e.setContent(html_5de49cbb6ff8c28a0ce2f14d4e52d2b4);
+            
+        
+
+        circle_marker_96d2cfb154c31e36bcff3efb02b9621c.bindPopup(popup_9b119be88882a4bdea29a4a4f81c6c7e)
+        ;
+
+        
+    
+    
+            circle_marker_96d2cfb154c31e36bcff3efb02b9621c.bindTooltip(
+                `<div>
+                     Pasar Gede
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8da958d8baf74b82b9602a17eb2118cb = L.circleMarker(
+                [-7.555835181, 110.8538009],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_b2a67459bb5013dc36e24c188a20fb60 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_418e418d65485e4d4648100a60c213b1 = $(`<div id="html_418e418d65485e4d4648100a60c213b1" style="width: 100.0%; height: 100.0%;"><b>Solo Techno Park</b><br>Jam: 07:30 - 16:00<br>Biaya: Free</div>`)[0];
+                popup_b2a67459bb5013dc36e24c188a20fb60.setContent(html_418e418d65485e4d4648100a60c213b1);
+            
+        
+
+        circle_marker_8da958d8baf74b82b9602a17eb2118cb.bindPopup(popup_b2a67459bb5013dc36e24c188a20fb60)
+        ;
+
+        
+    
+    
+            circle_marker_8da958d8baf74b82b9602a17eb2118cb.bindTooltip(
+                `<div>
+                     Solo Techno Park
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e7762a10cdc6ac0bd5f9822cc6dda923 = L.circleMarker(
+                [-7.553839457, 110.8534741],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_77f722a66690ee11eb86a91b862438c4 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_0df2501052120c2e6c2df7f1664622d4 = $(`<div id="html_0df2501052120c2e6c2df7f1664622d4" style="width: 100.0%; height: 100.0%;"><b>Taman Cerdas</b><br>Jam: 09:00 - 21:00<br>Biaya: Free</div>`)[0];
+                popup_77f722a66690ee11eb86a91b862438c4.setContent(html_0df2501052120c2e6c2df7f1664622d4);
+            
+        
+
+        circle_marker_e7762a10cdc6ac0bd5f9822cc6dda923.bindPopup(popup_77f722a66690ee11eb86a91b862438c4)
+        ;
+
+        
+    
+    
+            circle_marker_e7762a10cdc6ac0bd5f9822cc6dda923.bindTooltip(
+                `<div>
+                     Taman Cerdas
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_34c51a4573c5fb74e85fff666ae7ecf6 = L.circleMarker(
+                [-7.55669203, 110.8607455],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_ac950b37cfa34f6266d0c982263ab31d = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_90d8fcc5346616b8664986659b514fc0 = $(`<div id="html_90d8fcc5346616b8664986659b514fc0" style="width: 100.0%; height: 100.0%;"><b>Taman Lansia</b><br>Jam: 24 jam<br>Biaya: Free</div>`)[0];
+                popup_ac950b37cfa34f6266d0c982263ab31d.setContent(html_90d8fcc5346616b8664986659b514fc0);
+            
+        
+
+        circle_marker_34c51a4573c5fb74e85fff666ae7ecf6.bindPopup(popup_ac950b37cfa34f6266d0c982263ab31d)
+        ;
+
+        
+    
+    
+            circle_marker_34c51a4573c5fb74e85fff666ae7ecf6.bindTooltip(
+                `<div>
+                     Taman Lansia
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6c6d1a829cc98605b0b071adda75ffc0 = L.circleMarker(
+                [-7.555259829, 110.8065227],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_f7ca449e448ffb1d17f0a4565b875f26 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_7105929e754e153d4dc678d772e1374e = $(`<div id="html_7105929e754e153d4dc678d772e1374e" style="width: 100.0%; height: 100.0%;"><b>Stadion Manahan</b><br>Jam: 05:30 - 21:00<br>Biaya: Free</div>`)[0];
+                popup_f7ca449e448ffb1d17f0a4565b875f26.setContent(html_7105929e754e153d4dc678d772e1374e);
+            
+        
+
+        circle_marker_6c6d1a829cc98605b0b071adda75ffc0.bindPopup(popup_f7ca449e448ffb1d17f0a4565b875f26)
+        ;
+
+        
+    
+    
+            circle_marker_6c6d1a829cc98605b0b071adda75ffc0.bindTooltip(
+                `<div>
+                     Stadion Manahan
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c1bdb5e7b7674ae7a226a29dbfd6a596 = L.circleMarker(
+                [-7.551283848, 110.8204733],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_8b00ad62de9b68ff8d205053ed73bbc1 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_96752b5c79c98490982b5795b53565fd = $(`<div id="html_96752b5c79c98490982b5795b53565fd" style="width: 100.0%; height: 100.0%;"><b>Taman Tirtonadi</b><br>Jam: 24 jam<br>Biaya: Free</div>`)[0];
+                popup_8b00ad62de9b68ff8d205053ed73bbc1.setContent(html_96752b5c79c98490982b5795b53565fd);
+            
+        
+
+        circle_marker_c1bdb5e7b7674ae7a226a29dbfd6a596.bindPopup(popup_8b00ad62de9b68ff8d205053ed73bbc1)
+        ;
+
+        
+    
+    
+            circle_marker_c1bdb5e7b7674ae7a226a29dbfd6a596.bindTooltip(
+                `<div>
+                     Taman Tirtonadi
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_10c15186e64b64a77b35d84c571f3252 = L.circleMarker(
+                [-7.570257605, 110.8164116],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_56006ca4df19d43b488a81d629797bfd = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_ba8b5184eb3bfa1fca4d9a47f292aed6 = $(`<div id="html_ba8b5184eb3bfa1fca4d9a47f292aed6" style="width: 100.0%; height: 100.0%;"><b>Tumurun Private Museum</b><br>Jam: Tue-Thu 13:00-15:00, Fri-Sun 10:00-15:00<br>Biaya: Rp25,000</div>`)[0];
+                popup_56006ca4df19d43b488a81d629797bfd.setContent(html_ba8b5184eb3bfa1fca4d9a47f292aed6);
+            
+        
+
+        circle_marker_10c15186e64b64a77b35d84c571f3252.bindPopup(popup_56006ca4df19d43b488a81d629797bfd)
+        ;
+
+        
+    
+    
+            circle_marker_10c15186e64b64a77b35d84c571f3252.bindTooltip(
+                `<div>
+                     Tumurun Private Museum
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_605050f77cec84c618b415906755ff80 = L.circleMarker(
+                [-7.568494751, 110.822291],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_bf9033f26a39d3984beeff9b9e7598c7 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_9b5051e13e304dcf3cb270bfb10f5d02 = $(`<div id="html_9b5051e13e304dcf3cb270bfb10f5d02" style="width: 100.0%; height: 100.0%;"><b>Ngarsopuro Night Market</b><br>Jam: 17:00 - 23:00<br>Biaya: Free</div>`)[0];
+                popup_bf9033f26a39d3984beeff9b9e7598c7.setContent(html_9b5051e13e304dcf3cb270bfb10f5d02);
+            
+        
+
+        circle_marker_605050f77cec84c618b415906755ff80.bindPopup(popup_bf9033f26a39d3984beeff9b9e7598c7)
+        ;
+
+        
+    
+    
+            circle_marker_605050f77cec84c618b415906755ff80.bindTooltip(
+                `<div>
+                     Ngarsopuro Night Market
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0a281a1c8dbf55a913ac9cf55c0a91f0 = L.circleMarker(
+                [-7.569219287, 110.8298679],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_1ac55b0d46c4ffd96672b27cc8bfa7a4 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_b4ab2209cb702a01ba68c9e0ac037ef8 = $(`<div id="html_b4ab2209cb702a01ba68c9e0ac037ef8" style="width: 100.0%; height: 100.0%;"><b>Taman Balikota Solo</b><br>Jam: 24 jam<br>Biaya: Free</div>`)[0];
+                popup_1ac55b0d46c4ffd96672b27cc8bfa7a4.setContent(html_b4ab2209cb702a01ba68c9e0ac037ef8);
+            
+        
+
+        circle_marker_0a281a1c8dbf55a913ac9cf55c0a91f0.bindPopup(popup_1ac55b0d46c4ffd96672b27cc8bfa7a4)
+        ;
+
+        
+    
+    
+            circle_marker_0a281a1c8dbf55a913ac9cf55c0a91f0.bindTooltip(
+                `<div>
+                     Taman Balikota Solo
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fda5ea7a2df061b13a39cf6fccedd8e5 = L.circleMarker(
+                [-7.568292105, 110.8144969],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_338990e537cdb25ed124b3733c92f278 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_1f95dc19711362778b1955581af391d0 = $(`<div id="html_1f95dc19711362778b1955581af391d0" style="width: 100.0%; height: 100.0%;"><b>Museum Radya Pustaka</b><br>Jam: 08:00 - 16:00<br>Biaya: Rp10,000 (general), Rp7,500 (student), Rp5,000 (Solo student)</div>`)[0];
+                popup_338990e537cdb25ed124b3733c92f278.setContent(html_1f95dc19711362778b1955581af391d0);
+            
+        
+
+        circle_marker_fda5ea7a2df061b13a39cf6fccedd8e5.bindPopup(popup_338990e537cdb25ed124b3733c92f278)
+        ;
+
+        
+    
+    
+            circle_marker_fda5ea7a2df061b13a39cf6fccedd8e5.bindTooltip(
+                `<div>
+                     Museum Radya Pustaka
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5cb72398b1f7b5bddcc1cc7defa6d48b = L.circleMarker(
+                [-7.531636047, 110.7472482],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_59f6ec38cb3054e11bc75bf72d9436f0 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_27f98eb16bf398cc18c536a7aa17c19e = $(`<div id="html_27f98eb16bf398cc18c536a7aa17c19e" style="width: 100.0%; height: 100.0%;"><b>Pasar Malangjiwan Colomadu</b><br>Jam: 24 jam<br>Biaya: Free</div>`)[0];
+                popup_59f6ec38cb3054e11bc75bf72d9436f0.setContent(html_27f98eb16bf398cc18c536a7aa17c19e);
+            
+        
+
+        circle_marker_5cb72398b1f7b5bddcc1cc7defa6d48b.bindPopup(popup_59f6ec38cb3054e11bc75bf72d9436f0)
+        ;
+
+        
+    
+    
+            circle_marker_5cb72398b1f7b5bddcc1cc7defa6d48b.bindTooltip(
+                `<div>
+                     Pasar Malangjiwan Colomadu
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_18a2f38a1d3f2c0afb835a760a92a206 = L.circleMarker(
+                [-7.568754681, 110.8107542],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_c6996b69b0cbe3cbc3450e84c77740c0 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_501caacf2c1da1ea05d6d5eedc3bedd3 = $(`<div id="html_501caacf2c1da1ea05d6d5eedc3bedd3" style="width: 100.0%; height: 100.0%;"><b>Museum Keris Nusantara</b><br>Jam: 08:00 - 16:00<br>Biaya: Rp10,000</div>`)[0];
+                popup_c6996b69b0cbe3cbc3450e84c77740c0.setContent(html_501caacf2c1da1ea05d6d5eedc3bedd3);
+            
+        
+
+        circle_marker_18a2f38a1d3f2c0afb835a760a92a206.bindPopup(popup_c6996b69b0cbe3cbc3450e84c77740c0)
+        ;
+
+        
+    
+    
+            circle_marker_18a2f38a1d3f2c0afb835a760a92a206.bindTooltip(
+                `<div>
+                     Museum Keris Nusantara
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_77bcd1508a343037751c1e24c0e6e4f4 = L.circleMarker(
+                [-7.566305927, 110.8095326],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_c249e9963ffd02a9c0585a9c56fc89b4 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_db967c2c19d8968a6cc633be1f120e44 = $(`<div id="html_db967c2c19d8968a6cc633be1f120e44" style="width: 100.0%; height: 100.0%;"><b>Loji Gandrung</b><br>Jam: 08:00 - 16:00<br>Biaya: Rp10,000</div>`)[0];
+                popup_c249e9963ffd02a9c0585a9c56fc89b4.setContent(html_db967c2c19d8968a6cc633be1f120e44);
+            
+        
+
+        circle_marker_77bcd1508a343037751c1e24c0e6e4f4.bindPopup(popup_c249e9963ffd02a9c0585a9c56fc89b4)
+        ;
+
+        
+    
+    
+            circle_marker_77bcd1508a343037751c1e24c0e6e4f4.bindTooltip(
+                `<div>
+                     Loji Gandrung
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4a490d6127a1e1da8127dd749c144252 = L.circleMarker(
+                [-7.56905024, 110.812558],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_7728ae0a385cbecf12ef8a6d217d11fe = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_622a126703dbad2134833041304b64e3 = $(`<div id="html_622a126703dbad2134833041304b64e3" style="width: 100.0%; height: 100.0%;"><b>Gedung Wayang Orang Dance Theatre</b><br>Jam: 19:00 - 23:00<br>Biaya: Not specified</div>`)[0];
+                popup_7728ae0a385cbecf12ef8a6d217d11fe.setContent(html_622a126703dbad2134833041304b64e3);
+            
+        
+
+        circle_marker_4a490d6127a1e1da8127dd749c144252.bindPopup(popup_7728ae0a385cbecf12ef8a6d217d11fe)
+        ;
+
+        
+    
+    
+            circle_marker_4a490d6127a1e1da8127dd749c144252.bindTooltip(
+                `<div>
+                     Gedung Wayang Orang Dance Theatre
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_795148008015a16a4e841cbc82009585 = L.circleMarker(
+                [-7.568506445, 110.8162107],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_ff49f66082c5bad23216721886821c99 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_c7b017a2e2ce63c4de227840079ca96b = $(`<div id="html_c7b017a2e2ce63c4de227840079ca96b" style="width: 100.0%; height: 100.0%;"><b>House of Danar Hadi</b><br>Jam: 09:00 - 17:00<br>Biaya: Rp35,000 (general), Rp15,000 (student)</div>`)[0];
+                popup_ff49f66082c5bad23216721886821c99.setContent(html_c7b017a2e2ce63c4de227840079ca96b);
+            
+        
+
+        circle_marker_795148008015a16a4e841cbc82009585.bindPopup(popup_ff49f66082c5bad23216721886821c99)
+        ;
+
+        
+    
+    
+            circle_marker_795148008015a16a4e841cbc82009585.bindTooltip(
+                `<div>
+                     House of Danar Hadi
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4001679178a0438e47bbe12cba3ffd66 = L.circleMarker(
+                [-7.564517132, 110.818271],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_4746b86ceb6e37dd4135926887930d7d = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_4a1819a873fec24bb548024cb7804ef1 = $(`<div id="html_4a1819a873fec24bb548024cb7804ef1" style="width: 100.0%; height: 100.0%;"><b>Taman Punggawan Ngesus</b><br>Jam: 24 jam<br>Biaya: Free</div>`)[0];
+                popup_4746b86ceb6e37dd4135926887930d7d.setContent(html_4a1819a873fec24bb548024cb7804ef1);
+            
+        
+
+        circle_marker_4001679178a0438e47bbe12cba3ffd66.bindPopup(popup_4746b86ceb6e37dd4135926887930d7d)
+        ;
+
+        
+    
+    
+            circle_marker_4001679178a0438e47bbe12cba3ffd66.bindTooltip(
+                `<div>
+                     Taman Punggawan Ngesus
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_528910e2a760e68202f04089eb9bcd0a = L.circleMarker(
+                [-7.566613944, 110.8228758],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_bf5e1135e7cc7be0b19278f95f3c7db4 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_6b5ddcbc796cbab58e5ff42c55a3957e = $(`<div id="html_6b5ddcbc796cbab58e5ff42c55a3957e" style="width: 100.0%; height: 100.0%;"><b>Pura Mangkunegaran</b><br>Jam: 09:00 - 15:00<br>Biaya: Rp20,000</div>`)[0];
+                popup_bf5e1135e7cc7be0b19278f95f3c7db4.setContent(html_6b5ddcbc796cbab58e5ff42c55a3957e);
+            
+        
+
+        circle_marker_528910e2a760e68202f04089eb9bcd0a.bindPopup(popup_bf5e1135e7cc7be0b19278f95f3c7db4)
+        ;
+
+        
+    
+    
+            circle_marker_528910e2a760e68202f04089eb9bcd0a.bindTooltip(
+                `<div>
+                     Pura Mangkunegaran
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_593c78d26586d5860d7b62717b4f673e = L.circleMarker(
+                [-7.575178766, 110.8267555],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_80124e137174af5967531ec71c5aa314 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_45f66ca963105da58a6cbdeacddfb794 = $(`<div id="html_45f66ca963105da58a6cbdeacddfb794" style="width: 100.0%; height: 100.0%;"><b>Pasar Klewer</b><br>Jam: 24 jam<br>Biaya: Free</div>`)[0];
+                popup_80124e137174af5967531ec71c5aa314.setContent(html_45f66ca963105da58a6cbdeacddfb794);
+            
+        
+
+        circle_marker_593c78d26586d5860d7b62717b4f673e.bindPopup(popup_80124e137174af5967531ec71c5aa314)
+        ;
+
+        
+    
+    
+            circle_marker_593c78d26586d5860d7b62717b4f673e.bindTooltip(
+                `<div>
+                     Pasar Klewer
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b0974f3730338cd3395e9e6399ffe4e0 = L.circleMarker(
+                [-7.569809858, 110.8581447],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_c61d4c64f92568ccd344e555c8f51b35);
+        
+    
+        var popup_0bd52b67a94576ab5daab886b106dca1 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_2ffadb372dcb53b79f89154f5926a4c3 = $(`<div id="html_2ffadb372dcb53b79f89154f5926a4c3" style="width: 100.0%; height: 100.0%;"><b>Taman Sunan Jogo Kali</b><br>Jam: 06:00 - 21:00<br>Biaya: Free</div>`)[0];
+                popup_0bd52b67a94576ab5daab886b106dca1.setContent(html_2ffadb372dcb53b79f89154f5926a4c3);
+            
+        
+
+        circle_marker_b0974f3730338cd3395e9e6399ffe4e0.bindPopup(popup_0bd52b67a94576ab5daab886b106dca1)
+        ;
+
+        
+    
+    
+            circle_marker_b0974f3730338cd3395e9e6399ffe4e0.bindTooltip(
+                `<div>
+                     Taman Sunan Jogo Kali
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+</script>
 </html>
