@@ -2,127 +2,473 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Graph Rute Bus Solo Trans</title>
+  <title>Peta Rute Bus Solo Trans</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Link Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Link Leaflet Routing Machine CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
   <style>
     html, body {
       height: 100%;
       margin: 0;
+      font-family: Arial, sans-serif;
     }
     #map {
-      height: 100%;
-      width: 100%;
+      height: 70%;
+    }
+    #controls {
+      height: 30%;
+      padding: 10px;
+      overflow-y: auto;
+      background: #f9f9f9;
+    }
+    .legend {
+      position: fixed;
+      bottom: 40px;
+      left: 20px;
+      background: white;
+      padding: 10px;
+      border: 2px solid gray;
+      border-radius: 5px;
+      z-index: 1000;
+      font-size: 12px;
+    }
+    .legend div {
+      margin-bottom: 5px;
+    }
+    .legend-color {
+      display: inline-block;
+      width: 20px;
+      height: 3px;
+      margin-right: 5px;
+    }
+    select, button, input {
+      margin: 5px;
+      padding: 5px;
+    }
+    #route-result {
+      margin-top: 10px;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
-  <div id="map"></div>
-    <div>
-      <iframe width="100%" height="300px" frameborder="0" allowfullscreen src="https://umap.openstreetmap.fr/en/map/objek-wisata_1230706?scaleControl=false&miniMap=false&scrollWheelZoom=false&zoomControl=true&allowEdit=false&moreControl=true&searchControl=null&tilelayersControl=null&embedControl=null&datalayersControl=true&onLoadPanel=undefined&captionBar=false"></iframe>
-    </div>
+<div id="map"></div>
+<div id="controls">
+  <h3>Sistem Perencanaan Rute Bus Solo Trans</h3>
+  <div>
+    <button onclick="showHalteList()">Lihat Daftar Halte</button>
+    <button onclick="showWisataList()">Lihat Daftar Tempat Wisata</button>
+  </div>
+  <div>
+    <h4>Cari Rute Antar Halte</h4>
+    <select id="start-halte">
+      <option value="">Pilih Halte Awal</option>
+    </select>
+    <select id="end-halte">
+      <option value="">Pilih Halte Tujuan</option>
+    </select>
+    <button onclick="findRoute()">Cari Rute</button>
+  </div>
+  <div>
+    <h4>Cari Rute ke Tempat Wisata</h4>
+    <select id="start-halte-wisata">
+      <option value="">Pilih Halte Awal</option>
+    </select>
+    <select id="wisata">
+      <option value="">Pilih Tempat Wisata</option>
+    </select>
+    <button onclick="findRouteToWisata()">Cari Rute</button>
+  </div>
+  <div id="route-result"></div>
+</div>
 
-    <script>
-    const halteData = [
-      { id: "H01", name: "Jurug (Solo Safari)", lat: -7.56513474408024, lon: 110.858685876169, routes: ["K1", "FD2"] },
-      { id: "H02", name: "UNS", lat: -7.56455236195493, lon: 110.8561722718, routes: ["K1"] },
-      { id: "H03", name: "Vastenburg", lat: -7.57175743180982, lon: 110.8297470581, routes: ["K1"] },
-      { id: "H04", name: "Gladag", lat: -7.57203341152584, lon: 110.827739168751, routes: ["K1"] },
-      { id: "H05", name: "Pasar Pon Selatan", lat: -7.57053451729552, lon: 110.822770250784, routes: ["K1"] },
-      { id: "H06", name: "Sriwedari 1 Selatan", lat: -7.56729936753916, lon: 110.812057143543, routes: ["K1", "FD8"] },
-      { id: "H07", name: "Sriwedari 2 Selatan", lat: -7.56795480396892, lon: 110.814320671231, routes: ["K1", "FD8"] },
-      { id: "H08", name: "Colomadu Utara", lat: -7.53253942382143, lon: 110.748923594566, routes: ["K1"] },
-      { id: "H09", name: "Tugu Lilin", lat: -7.567581219, lon: 110.7835961, routes: ["K3"] },
-      { id: "H10", name: "Vestenburg (Kantor Pos)", lat: -7.57140133360988, lon: 110.829647652826, routes: ["K3"] },
-      { id: "H11", name: "Balai Kota", lat: -7.56993057310902, lon: 110.830046989632, routes: ["K3", "FD2"] },
-      { id: "H12", name: "Pasar Gede", lat: -7.5684698254206, lon: 110.831727375632, routes: ["K3"] },
-      { id: "H13", name: "Solo Techno Park", lat: -7.55653679470118, lon: 110.852209973442, routes: ["K3"] },
-      { id: "H14", name: "Kantor Kecamatan Jebres", lat: -7.55541900174376, lon: 110.854977935521, routes: ["K3"] },
-      { id: "H15", name: "Halte RS Jiwa / Taman Lansia", lat: -7.55707042819373, lon: 110.860610255225, routes: ["K3"] },
-      { id: "H16", name: "Halte Kecamatan Colomadu", lat: -7.532634345, lon: 110.7487969, routes: ["K4"] },
-      { id: "H17", name: "Stadion Manahan", lat: -7.556663684, lon: 110.8048193, routes: ["K4"] },
-      { id: "H18", name: "Terminal Tirtonadi", lat: -7.551298569, lon: 110.8182099, routes: ["K4", "K6"] },
-      { id: "H19", name: "Ngapeman", lat: -7.568500872, lon: 110.8166443, routes: ["K5", "FD8"] },
-      { id: "H20", name: "Sriwedari", lat: -7.567047482, lon: 110.8118452, routes: ["K5"] },
-      { id: "H21", name: "Landasan Udara (Pasar Colomadu)", lat: -7.53171343, lon: 110.7473448, routes: ["K5", "FD7"] },
-      { id: "H22", name: "Ngarsopuro", lat: -7.569086355, lon: 110.8221284, routes: ["K6"] },
-      { id: "H23", name: "Pasar Kembang", lat: -7.571950677, lon: 110.8166645, routes: ["K6"] },
-      { id: "H24", name: "Sriwedari 2 Utara", lat: -7.567852615, lon: 110.8146095, routes: ["FD2", "FD8"] },
-      { id: "H25", name: "Museum Keris B", lat: -7.568829291, lon: 110.8106188, routes: ["FD8"] },
-      { id: "H26", name: "Mangkunegaran", lat: -7.567624751, lon: 110.8220978, routes: ["FD9"] },
-      { id: "H27", name: "Sahid", lat: -7.564166826, lon: 110.8185673, routes: ["FD8", "FD9"] },
-      { id: "H28", name: "Pasar Klewer", lat: -7.575037806, lon: 110.8264383, routes: ["FD10"] },
-      { id: "H29", name: "Pasar Pucang Sawit A", lat: -7.567996022, lon: 110.8582507, routes: ["FD10"] },
+<!-- Link Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Link Leaflet Routing Machine JS -->
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+<script>
+  const halte_data = [
+    {"id":"H01","name":"Jurug (Solo Safari)","lat":-7.56513474408024,"lon":110.858685876169,"routes":["K1","FD2"]},
+    {"id":"H02","name":"UNS","lat":-7.56455236195493,"lon":110.8561722718,"routes":["K1"]},
+    {"id":"H03","name":"Vastenburg","lat":-7.57175743180982,"lon":110.8297470581,"routes":["K1"]},
+    {"id":"H04","name":"Gladag","lat":-7.57203341152584,"lon":110.827739168751,"routes":["K1","K3"]},
+    {"id":"H05","name":"Pasar Pon Selatan","lat":-7.57053451729552,"lon":110.822770250784,"routes":["K1"]},
+    {"id":"H06","name":"Sriwedari 1 Selatan","lat":-7.56729936753916,"lon":110.812057143543,"routes":["K1","FD8"]},
+    {"id":"H07","name":"Sriwedari 2 Selatan","lat":-7.56795480396892,"lon":110.814320671231,"routes":["K1","FD8"]},
+    {"id":"H08","name":"Colomadu Utara","lat":-7.53253942382143,"lon":110.748923594566,"routes":["K1"]},
+    {"id":"H09","name":"Tugu Lilin","lat":-7.567581219,"lon":110.7835961,"routes":["K3"]},
+    {"id":"H10","name":"Vestenburg (Kantor Pos)","lat":-7.57140133360988,"lon":110.829647652826,"routes":["K3"]},
+    {"id":"H11","name":"Balai Kota","lat":-7.56993057310902,"lon":110.830046989632,"routes":["K3","FD2"]},
+    {"id":"H12","name":"Pasar Gede","lat":-7.5684698254206,"lon":110.831727375632,"routes":["K3"]},
+    {"id":"H13","name":"Solo Techno Park","lat":-7.55653679470118,"lon":110.852209973442,"routes":["K3"]},
+    {"id":"H14","name":"Kantor Kecamatan Jebres","lat":-7.55541900174376,"lon":110.854977935521,"routes":["K3"]},
+    {"id":"H15","name":"Halte RS Jiwa / Taman Lansia","lat":-7.55707042819373,"lon":110.860610255225,"routes":["K3"]},
+    {"id":"H16","name":"Halte Kecamatan Colomadu","lat":-7.532634345,"lon":110.7487969,"routes":["K4"]},
+    {"id":"H17","name":"Stadion Manahan","lat":-7.556663684,"lon":110.8048193,"routes":["K4"]},
+    {"id":"H18","name":"Terminal Tirtonadi","lat":-7.551298569,"lon":110.8182099,"routes":["K4","K6"]},
+    {"id":"H19","name":"Ngapeman","lat":-7.568500872,"lon":110.8166443,"routes":["K5","FD8"]},
+    {"id":"H20","name":"Sriwedari","lat":-7.567047482,"lon":110.8118452,"routes":["K5"]},
+    {"id":"H21","name":"Landasan Udara (Pasar Colomadu)","lat":-7.53171343,"lon":110.7473448,"routes":["K5","FD7"]},
+    {"id":"H22","name":"Ngarsopuro","lat":-7.569086355,"lon":110.8221284,"routes":["K6"]},
+    {"id":"H23","name":"Pasar Kembang","lat":-7.571950677,"lon":110.8166645,"routes":["K6"]},
+    {"id":"H24","name":"Sriwedari 2 Utara","lat":-7.567852615,"lon":110.8146095,"routes":["FD2","FD8"]},
+    {"id":"H25","name":"Museum Keris B","lat":-7.568829291,"lon":110.8106188,"routes":["FD8"]},
+    {"id":"H26","name":"Mangkunegaran","lat":-7.567624751,"lon":110.8220978,"routes":["FD9"]},
+    {"id":"H27","name":"Sahid","lat":-7.564166826,"lon":110.8185673,"routes":["FD8","FD9"]},
+    {"id":"H28","name":"Pasar Klewer","lat":-7.575037806,"lon":110.8264383,"routes":["FD10"]},
+    {"id":"H29","name":"Pasar Pucang Sawit A","lat":-7.567996022,"lon":110.8582507,"routes":["FD10"]}
+  ];
+
+  const wisata_data = [
+    {"id":"W01","name":"Solo Safari","lat":-7.564391741,"lon":110.8586613,"halte":["H01"],"hours":"08:30 - 16:30","cost":"weekday: Rp45,000 (child), Rp55,000 (adult); weekend: Rp60,000 (child), Rp75,000 (adult)"},
+    {"id":"W02","name":"Danau UNS","lat":-7.561172246,"lon":110.8581931,"halte":["H02"],"hours":"24 jam","cost":"Free"},
+    {"id":"W03","name":"Benteng Vastenburg","lat":-7.571804006,"lon":110.8307858,"halte":["H03","H10"],"hours":"24 jam","cost":"Free"},
+    {"id":"W04","name":"Kampung Wisata Batik Kauman","lat":-7.573215566,"lon":110.8263633,"halte":["H04"],"hours":"09:00 - 18:00 (weekday), 08:00 - 18:00 (weekend)","cost":"Free"},
+    {"id":"W05","name":"Pasar Triwindu","lat":-7.568984669,"lon":110.8225384,"halte":["H05"],"hours":"09:00 - 16:00","cost":"Free"},
+    {"id":"W06","name":"Taman Sriwedari","lat":-7.568224905,"lon":110.8129629,"halte":["H06","H07","H20"],"hours":"24 jam","cost":"Free"},
+    {"id":"W07","name":"De Tjolomadoe","lat":-7.533922576,"lon":110.7498663,"halte":["H08","H16","H21"],"hours":"09:00 - 17:00","cost":"Rp40,000"},
+    {"id":"W08","name":"Lapangan Makamhaji","lat":-7.5691203,"lon":110.7831005,"halte":["H09"],"hours":"24 jam","cost":"Free"},
+    {"id":"W09","name":"Balaikota Surakarta","lat":-7.569192352,"lon":110.8296584,"halte":["H11"],"hours":"24 jam","cost":"Free"},
+    {"id":"W10","name":"Pasar Gede","lat":-7.569143893,"lon":110.8314553,"halte":["H12"],"hours":"24 jam","cost":"Free"},
+    {"id":"W11","name":"Solo Techno Park","lat":-7.555835181,"lon":110.8538009,"halte":["H13"],"hours":"07:30 - 16:00","cost":"Free"},
+    {"id":"W12","name":"Taman Cerdas","lat":-7.553839457,"lon":110.8534741,"halte":["H14"],"hours":"09:00 - 21:00","cost":"Free"},
+    {"id":"W13","name":"Taman Lansia","lat":-7.55669203,"lon":110.8607455,"halte":["H15"],"hours":"24 jam","cost":"Free"},
+    {"id":"W14","name":"Stadion Manahan","lat":-7.555259829,"lon":110.8065227,"halte":["H17"],"hours":"05:30 - 21:00","cost":"Free"},
+    {"id":"W15","name":"Taman Tirtonadi","lat":-7.551283848,"lon":110.8204733,"halte":["H18"],"hours":"24 jam","cost":"Free"},
+    {"id":"W16","name":"Tumurun Private Museum","lat":-7.570257605,"lon":110.8164116,"halte":["H19","H23"],"hours":"Tue-Thu 13:00-15:00, Fri-Sun 10:00-15:00","cost":"Rp25,000"},
+    {"id":"W17","name":"Ngarsopuro Night Market","lat":-7.568494751,"lon":110.822291,"halte":["H22"],"hours":"17:00 - 23:00","cost":"Free"},
+    {"id":"W18","name":"Taman Balikota Solo","lat":-7.569219287,"lon":110.8298679,"halte":["H11"],"hours":"24 jam","cost":"Free"},
+    {"id":"W19","name":"Museum Radya Pustaka","lat":-7.568292105,"lon":110.8144969,"halte":["H24"],"hours":"08:00 - 16:00","cost":"Rp10,000 (general), Rp7,500 (student), Rp5,000 (Solo student)"},
+    {"id":"W20","name":"Pasar Malangjiwan Colomadu","lat":-7.531636047,"lon":110.7472482,"halte":["H21"],"hours":"24 jam","cost":"Free"},
+    {"id":"W21","name":"Museum Keris Nusantara","lat":-7.568754681,"lon":110.8107542,"halte":["H25"],"hours":"08:00 - 16:00","cost":"Rp10,000"},
+    {"id":"W22","name":"Loji Gandrung","lat":-7.566305927,"lon":110.8095326,"halte":["H06"],"hours":"08:00 - 16:00","cost":"Rp10,000"},
+    {"id":"W23","name":"Gedung Wayang Orang Dance Theatre","lat":-7.56905024,"lon":110.812558,"halte":["H24","H07"],"hours":"19:00 - 23:00","cost":"Not specified"},
+    {"id":"W24","name":"House of Danar Hadi","lat":-7.568506445,"lon":110.8162107,"halte":["H19"],"hours":"09:00 - 17:00","cost":"Rp35,000 (general), Rp15,000 (student)"},
+    {"id":"W25","name":"Taman Punggawan Ngesus","lat":-7.564517132,"lon":110.818271,"halte":["H27"],"hours":"24 jam","cost":"Free"},
+    {"id":"W26","name":"Pura Mangkunegaran","lat":-7.566613944,"lon":110.8228758,"halte":["H26"],"hours":"09:00 - 15:00","cost":"Rp20,000"},
+    {"id":"W27","name":"Pasar Klewer","lat":-7.575178766,"lon":110.8267555,"halte":["H28"],"hours":"24 jam","cost":"Free"},
+    {"id":"W28","name":"Taman Sunan Jogo Kali","lat":-7.569809858,"lon":110.8581447,"halte":["H29"],"hours":"06:00 - 21:00","cost":"Free"}
+  ];
+
+  const routeColors = {
+    "K1": "#FF6B6B",
+    "K3": "#4ECDC4",
+    "K4": "#45B7D1",
+    "K5": "#96CEB4",
+    "K6": "#FECA57",
+    "FD2": "#FF9FF3",
+    "FD7": "#54A0FF",
+    "FD8": "#5F27CD",
+    "FD9": "#00D2D3",
+    "FD10": "#FF9F43"
+  };
+
+  const routeOrder = {
+    "K1": ["H01", "H02", "H03", "H04", "H05", "H06", "H07", "H08"],
+    "K3": ["H09", "H04", "H10", "H11", "H12", "H13", "H14", "H15"],
+    "K4": ["H16", "H17", "H18"],
+    "K5": ["H19", "H20", "H21"],
+    "K6": ["H18", "H22", "H23"],
+    "FD2": ["H01", "H11", "H24"],
+    "FD8": ["H25", "H06", "H07", "H24", "H19", "H27"],
+    "FD9": ["H26", "H27"],
+    "FD10": ["H28", "H29"]
+  };
+
+  const map = L.map('map').setView([-7.56, 110.82], 13);
+  let currentRouteControl = null;
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Tambahkan marker halte
+  halte_data.forEach(h => {
+    L.marker([h.lat, h.lon], {
+      icon: L.icon({
+        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34]
+      })
+    }).addTo(map)
+      .bindPopup(`<b>${h.name}</b><br>ID: ${h.id}<br>Rute: ${h.routes.join(", ")}`);
+  });
+
+  // Tambahkan marker tempat wisata
+  wisata_data.forEach(w => {
+    L.circleMarker([w.lat, w.lon], {
+      radius: 5,
+      color: 'purple',
+      fillColor: 'purple',
+      fillOpacity: 0.6
+    }).addTo(map)
+      .bindPopup(`<b>${w.name}</b><br>Jam: ${w.hours}<br>Biaya: ${w.cost}<br>Dekat Halte: ${w.halte.join(", ")}`);
+  });
+
+  // Tambahkan legenda
+  const legend = L.control({ position: 'bottomleft' });
+  legend.onAdd = function(map) {
+    const div = L.DomUtil.create('div', 'legend');
+    let legendContent = '<b>Legenda</b><br>';
+    for (const [route, color] of Object.entries(routeColors)) {
+      legendContent += `<div><span class="legend-color" style="background:${color}"></span>Rute ${route}</div>`;
+    }
+    legendContent += `<div><img src="https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png" width="15" height="25"> Halte</div>`;
+    legendContent += `<div><span style="background:purple;border-radius:50%;width:10px;height:10px;display:inline-block;"></span> Tempat Wisata</div>`;
+    div.innerHTML = legendContent;
+    return div;
+  };
+  legend.addTo(map);
+
+  // Isi dropdown halte
+  const startHalteSelect = document.getElementById('start-halte');
+  const endHalteSelect = document.getElementById('end-halte');
+  const startHalteWisataSelect = document.getElementById('start-halte-wisata');
+  halte_data.forEach(h => {
+    const option = document.createElement('option');
+    option.value = h.id;
+    option.text = `${h.id}: ${h.name}`;
+    startHalteSelect.appendChild(option.cloneNode(true));
+    endHalteSelect.appendChild(option.cloneNode(true));
+    startHalteWisataSelect.appendChild(option);
+  });
+
+  // Isi dropdown wisata
+  const wisataSelect = document.getElementById('wisata');
+  wisata_data.forEach(w => {
+    const option = document.createElement('option');
+    option.value = w.name;
+    option.text = w.name;
+    wisataSelect.appendChild(option);
+  });
+
+  // Fungsi untuk menghitung jarak Haversine
+  function haversine(lat1, lon1, lat2, lon2) {
+    const R = 6371.0; // Radius bumi dalam km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.asin(Math.sqrt(a));
+    return R * c;
+  }
+
+  // Fungsi untuk menghitung waktu tempuh
+  function calculateTravelTime(distanceKm, speedKmh = 30.0) {
+    return (distanceKm / speedKmh) * 60; // Konversi ke menit
+  }
+
+  // Fungsi untuk mencari rute antar halte
+  function findRoute() {
+    const startId = startHalteSelect.value;
+    const endId = endHalteSelect.value;
+    if (!startId || !endId) {
+      alert("Pilih halte awal dan tujuan!");
+      return;
+    }
+    if (startId === endId) {
+      alert("Halte awal dan tujuan tidak boleh sama!");
+      return;
+    }
+
+    // Cari rute menggunakan OSRM
+    const startHalte = halte_data.find(h => h.id === startId);
+    const endHalte = halte_data.find(h => h.id === endId);
+    const waypoints = [
+      L.latLng(startHalte.lat, startHalte.lon),
+      L.latLng(endHalte.lat, endHalte.lon)
+// 50ec3d3c3aa3f287b7defa81b28b3a45593210b3
     ];
 
-    const routeColors = {
-      "K1": "#FF6B6B",
-      "K3": "#4ECDC4",
-      "K4": "#45B7D1",
-      "K5": "#96CEB4",
-      "K6": "#FECA57",
-      "FD2": "#FF9FF3",
-      "FD7": "#54A0FF",
-      "FD8": "#5F27CD",
-      "FD9": "#00D2D3",
-      "FD10": "#FF9F43"
-    };
+    if (currentRouteControl) {
+      map.removeControl(currentRouteControl);
+    }
 
-    function getEdges(halteList) {
-      const edges = [];
-      const seen = new Set();
-      for (let i = 0; i < halteList.length; i++) {
-        for (let j = i + 1; j < halteList.length; j++) {
-          const h1 = halteList[i];
-          const h2 = halteList[j];
-          const commonRoutes = h1.routes.filter(r => h2.routes.includes(r));
-          if (commonRoutes.length > 0) {
-            const key = [h1.id, h2.id].sort().join("-");
-            if (!seen.has(key)) {
-              edges.push({
-                from: h1,
-                to: h2,
-                route: commonRoutes[0]
-              });
-              seen.add(key);
-            }
-          }
+    currentRouteControl = L.Routing.control({
+      waypoints: waypoints,
+      lineOptions: {
+        styles: [{ color: '#FF0000', weight: 4, opacity: 0.7 }]
+      },
+      createMarker: () => null,
+      router: L.Routing.osrmv1({
+        serviceUrl: 'https://router.project-osrm.org/route/v1'
+      }),
+      addWaypoints: false,
+      draggableWaypoints: false,
+      fitSelectedRoutes: true,
+      show: false
+    })
+    .on('routesfound', function(e) {
+      const route = e.routes[0];
+      const distance = route.summary.totalDistance / 1000; // km
+      const time = route.summary.totalTime / 60; // menit
+      document.getElementById('route-result').innerHTML = `
+        <b>Rute Ditemukan!</b><br>
+        Dari: ${startHalte.name}<br>
+        Ke: ${endHalte.name}<br>
+        Jarak: ${distance.toFixed(1)} km<br>
+        Waktu: ~${Math.round(time)} menit<br>
+        Biaya Estimasi: Rp 3700
+      `;
+    })
+    .on('routingerror', function(e) {
+      console.error('Kesalahan routing:', e.error);
+      alert('Gagal memuat rute. Silakan cek konsol browser untuk detail.');
+    })
+    .addTo(map);
+  }
+
+  // Fungsi untuk mencari rute ke wisata
+  function findRouteToWisata() {
+    const startId = startHalteWisataSelect.value;
+    const wisataName = wisataSelect.value;
+    if (!startId || !wisataName) {
+      alert("Pilih halte awal dan tempat wisata!");
+      return;
+    }
+
+    const startHalte = halte_data.find(h => h.id === startId);
+    const wisata = wisata_data.find(w => w.name === wisataName);
+    if (!wisata) {
+      alert("Tempat wisata tidak ditemukan!");
+      return;
+    }
+
+    // Cari halte terdekat ke wisata
+    let bestHalteId = null;
+    let minDistance = Infinity;
+    wisata.halte.forEach(halteId => {
+      const halte = halte_data.find(h => h.id === halteId);
+      if (halte) {
+        const distance = haversine(halte.lat, halte.lon, wisata.lat, wisata.lon);
+        if (distance < minDistance) {
+          minDistance = distance;
+          bestHalteId = halteId;
         }
       }
-      return edges;
+    });
+
+    if (!bestHalteId) {
+      alert("Tidak ada halte yang terkait dengan tempat wisata ini!");
+      return;
     }
 
-    function initMap() {
-      const map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 13,
-        center: { lat: -7.565, lng: 110.82 },
-      });
+    const endHalte = halte_data.find(h => h.id === bestHalteId);
+    const waypoints = [
+      L.latLng(startHalte.lat, startHalte.lon),
+      L.latLng(endHalte.lat, endHalte.lon)
+    ];
 
-      halteData.forEach(halte => {
-        new google.maps.Marker({
-          position: { lat: halte.lat, lng: halte.lon },
-          map: map,
-          title: halte.name
-        });
-      });
-
-      const edges = getEdges(halteData);
-      edges.forEach(edge => {
-        new google.maps.Polyline({
-          path: [
-            { lat: edge.from.lat, lng: edge.from.lon },
-            { lat: edge.to.lat, lng: edge.to.lon }
-          ],
-          geodesic: true,
-          strokeColor: routeColors[edge.route] || "#000000",
-          strokeOpacity: 0.8,
-          strokeWeight: 3,
-          map: map
-        });
-      });
+    if (currentRouteControl) {
+      map.removeControl(currentRouteControl);
     }
-  </script>
 
-  <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNP8FHeEcVL0SpwNhN62MgymlA0Gq7bV4&callback=initMap">
-  </script>
+    currentRouteControl = L.Routing.control({
+      waypoints: waypoints,
+      lineOptions: {
+        styles: [{ color: '#FF0000', weight: 4, opacity: 0.7 }]
+      },
+      createMarker: () => null,
+      router: L.Routing.osrmv1({
+        serviceUrl: 'https://router.project-osrm.org/route/v1'
+      }),
+      addWaypoints: false,
+      draggableWaypoints: false,
+      fitSelectedRoutes: true,
+      show: false
+    })
+    .on('routesfound', function(e) {
+      const route = e.routes[0];
+      const distance = route.summary.totalDistance / 1000; // km
+      const time = route.summary.totalTime / 60; // menit
+      const walkingTime = minDistance * 12; // menit
+      document.getElementById('route-result').innerHTML = `
+        <b>Rute ke ${wisata.name} Ditemukan!</b><br>
+        Dari: ${startHalte.name}<br>
+        Ke Halte: ${endHalte.name}<br>
+        Jarak Bus: ${distance.toFixed(1)} km<br>
+        Waktu Bus: ~${Math.round(time)} menit<br>
+        Jarak Jalan Kaki: ${minDistance.toFixed(1)} km (~${Math.round(walkingTime)} menit)<br>
+        Jam Operasional: ${wisata.hours}<br>
+        Biaya Masuk: ${wisata.cost}<br>
+        Biaya Transportasi: Rp 3700
+      `;
+    })
+    .on('routingerror', function(e) {
+      console.error('Kesalahan routing:', e.error);
+      alert('Gagal memuat rute. Silakan cek konsol browser untuk detail.');
+    })
+    .addTo(map);
+  }
+
+  // Fungsi untuk menampilkan daftar halte
+  function showHalteList() {
+    let result = '<b>Daftar Halte</b><ul>';
+    halte_data.sort((a, b) => a.id.localeCompare(b.id)).forEach(h => {
+      result += `<li>${h.id}: ${h.name} (Rute: ${h.routes.join(", ")})</li>`;
+    });
+    result += '</ul>';
+    document.getElementById('route-result').innerHTML = result;
+  }
+
+  // Fungsi untuk menampilkan daftar tempat wisata
+  function showWisataList() {
+    let result = '<b>Daftar Tempat Wisata</b><ul>';
+    wisata_data.sort((a, b) => a.id.localeCompare(b.id)).forEach(w => {
+      result += `<li>${w.id}: ${w.name} (Dekat Halte: ${w.halte.join(", ")})<br>Jam: ${w.hours}<br>Biaya: ${w.cost}</li>`;
+    });
+    result += '</ul>';
+    document.getElementById('route-result').innerHTML = result;
+  }
+
+  // Gambar rute trayek menggunakan OSRM
+  Object.entries(routeOrder).forEach(([route, halteIds]) => {
+    const waypoints = halteIds
+      .map(id => {
+        const halte = halte_data.find(h => h.id === id);
+        return halte ? [halte.lat, halte.lon] : null;
+      })
+      .filter(coord => coord !== null)
+      .map(coord => L.latLng(coord[0], coord[1]));
+
+    if (waypoints.length > 1) {
+      console.log(`Memproses rute ${route} dengan waypoints:`, waypoints);
+      L.Routing.control({
+        waypoints: waypoints,
+        lineOptions: {
+          styles: [{ color: routeColors[route] || "gray", weight: 4, opacity: 0.7 }]
+        },
+        createMarker: () => null,
+        router: L.Routing.osrmv1({
+          serviceUrl: 'https://router.project-osrm.org/route/v1'
+        }),
+        addWaypoints: false,
+        draggableWaypoints: false,
+        fitSelectedRoutes: false,
+        show: false
+      })
+      .on('routesfound', function(e) {
+        console.log(`Rute ${route} ditemukan:`, e.routes);
+        e.routes.forEach(r => {
+          L.polyline(r.coordinates, {
+            color: routeColors[route] || "gray",
+            weight: 4,
+            opacity: 0.7
+          }).addTo(map).bindPopup(`Trayek: ${route}`);
+        });
+      })
+      .on('routingerror', function(e) {
+        console.error(`Kesalahan routing untuk ${route}:`, e.error);
+      })
+      .addTo(map);
+    } else {
+      console.warn(`Rute ${route} memiliki waypoints tidak cukup:`, waypoints);
+    }
+  });
+</script>
 </body>
 </html>

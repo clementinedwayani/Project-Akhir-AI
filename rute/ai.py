@@ -1,16 +1,13 @@
-import networkx as nx
-import matplotlib
-matplotlib.use('TkAgg')  # Set TkAgg backend for Windows
-import matplotlib.pyplot as plt
+import folium
+from folium.plugins import MarkerCluster
 import math
 import heapq
 from typing import List, Dict, Tuple, Optional, Set
 from dataclasses import dataclass, field
-from datetime import datetime, time
-import re
 import os
+import webbrowser
 
-# Haversine formula to calculate distance between two points (lat, lon) in kilometers
+# [Haversine dan calculate_travel_time tetap sama seperti kode asli]
 def haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     R = 6371.0  # Earth's radius in kilometers
     lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
@@ -20,7 +17,6 @@ def haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     c = 2 * math.asin(math.sqrt(a))
     return R * c
 
-# Calculate travel time in minutes given distance (km) and speed (km/h)
 def calculate_travel_time(distance_km: float, speed_kmh: float = 30.0) -> float:
     return (distance_km / speed_kmh) * 60  # Convert hours to minutes
 
@@ -42,7 +38,7 @@ class Node:
 
 class BusRouteSystem:
     def __init__(self):
-        # Bus stops (halte) data
+        # [halte_data dan wisata_data tetap sama seperti kode asli]
         self.halte_data = [
             {"id": "H01", "name": "Jurug (Solo Safari)", "lat": -7.56513474408024, "lon": 110.858685876169, "routes": ["K1", "FD2"]},
             {"id": "H02", "name": "UNS", "lat": -7.56455236195493, "lon": 110.8561722718, "routes": ["K1"]},
@@ -75,7 +71,6 @@ class BusRouteSystem:
             {"id": "H29", "name": "Pasar Pucang Sawit A", "lat": -7.567996022, "lon": 110.8582507, "routes": ["FD10"]},
         ]
         
-        # Tourist attractions (wisata) data with cost and operational hours
         self.wisata_data = [
             {"id": "W01", "name": "Solo Safari", "lat": -7.564391741, "lon": 110.8586613, "halte": ["H01"], "hours": "08:30 - 16:30", "cost": "weekday: Rp45,000 (child), Rp55,000 (adult); weekend: Rp60,000 (child), Rp75,000 (adult)"},
             {"id": "W02", "name": "Danau UNS", "lat": -7.561172246, "lon": 110.8581931, "halte": ["H02"], "hours": "24 jam", "cost": "Free"},
@@ -107,13 +102,8 @@ class BusRouteSystem:
             {"id": "W28", "name": "Taman Sunan Jogo Kali", "lat": -7.569809858, "lon": 110.8581447, "halte": ["H29"], "hours": "06:00 - 21:00", "cost": "Free"},
         ]
         
-        # Create adjacency graph based on route connections
         self.graph = self._build_graph()
-        
-        # Create halte lookup dictionary
         self.halte_dict = {h["id"]: h for h in self.halte_data}
-        
-        # Route colors for visualization
         self.route_colors = {
             "K1": "#FF6B6B",    # Red
             "K3": "#4ECDC4",    # Teal
@@ -126,9 +116,8 @@ class BusRouteSystem:
             "FD9": "#00D2D3",   # Cyan
             "FD10": "#FF9F43"   # Orange
         }
-    
+
     def _build_graph(self) -> Dict[str, List[Tuple[str, float, str]]]:
-        """Build adjacency graph with connections between haltes on same routes"""
         graph = {}
         for halte in self.halte_data:
             graph[halte["id"]] = []
@@ -144,149 +133,119 @@ class BusRouteSystem:
                         route = list(common_routes)[0]
                         graph[halte1["id"]].append((halte2["id"], distance, route))
         return graph
-    
+
     def visualize_route_graph(self, highlight_path: Optional[List[str]] = None, title_suffix: str = ""):
-        """Visualize the BST route network as a graph with enhanced styling"""
+        """Visualize the BST route network as an interactive map using folium, saved as index.html"""
         try:
-            plt.figure(figsize=(16, 12))
-            plt.clf()
-            
-            G = nx.Graph()
-            
-            # Add nodes (haltes) with positions based on lat/lon
-            pos = {}
+            # Create a map centered on Solo (average of all halte coordinates)
+            avg_lat = sum(h["lat"] for h in self.halte_data) / len(self.halte_data)
+            avg_lon = sum(h["lon"] for h in self.halte_data) / len(self.halte_data)
+            m = folium.Map(location=[avg_lat, avg_lon], zoom_start=13, tiles="OpenStreetMap")
+
+            # Add MarkerCluster for better handling of multiple markers
+            marker_cluster = MarkerCluster().add_to(m)
+
+            # Add halte markers
             for halte in self.halte_data:
-                G.add_node(halte["id"], 
-                          label=halte["name"], 
-                          routes=halte["routes"])
-                # Use lon as x and negative lat as y for geographic positioning
-                pos[halte["id"]] = (halte["lon"], -halte["lat"])
-            
-            # Add edges (route connections) with proper attributes
+                popup_text = f"<b>{halte['name']}</b><br>ID: {halte['id']}<br>Rute: {', '.join(halte['routes'])}"
+                color = 'blue'
+                if highlight_path:
+                    if halte["id"] == highlight_path[0]:
+                        color = 'green'  # Start node
+                    elif halte["id"] == highlight_path[-1]:
+                        color = 'red'    # End node
+                    elif halte["id"] in highlight_path:
+                        color = 'orange' # Intermediate nodes
+                
+                folium.Marker(
+                    location=[halte["lat"], halte["lon"]],
+                    popup=folium.Popup(popup_text, max_width=250),
+                    icon=folium.Icon(color=color, icon='bus', prefix='fa'),
+                    tooltip=halte["name"]
+                ).add_to(marker_cluster)
+
+            # Draw route connections
             edge_routes = {}
             for halte_id, connections in self.graph.items():
-                for neighbor_id, distance, route in connections:
+                for neighbor_id, _, route in connections:
                     edge_key = tuple(sorted([halte_id, neighbor_id]))
                     if edge_key not in edge_routes:
-                        G.add_edge(halte_id, neighbor_id, weight=distance, route=route)
                         edge_routes[edge_key] = route
-            
-            # Create separate edge lists for each route for better visualization
-            route_edges = {}
-            for route in self.route_colors.keys():
-                route_edges[route] = [(u, v) for u, v, d in G.edges(data=True) if d['route'] == route]
-            
-            # Draw edges by route with different colors
-            for route, edges in route_edges.items():
-                if edges:
-                    # Highlight path edges if provided
-                    if highlight_path:
-                        path_edges = [(highlight_path[i], highlight_path[i+1]) for i in range(len(highlight_path)-1)]
-                        path_edges_set = set(path_edges + [(v, u) for u, v in path_edges])
-                        
-                        # Separate highlighted and normal edges
-                        highlighted_edges = [e for e in edges if e in path_edges_set or (e[1], e[0]) in path_edges_set]
-                        normal_edges = [e for e in edges if e not in highlighted_edges]
-                        
-                        # Draw normal edges
-                        if normal_edges:
-                            nx.draw_networkx_edges(G, pos, edgelist=normal_edges, 
-                                                 edge_color=self.route_colors[route], 
-                                                 width=1.5, alpha=0.6)
-                        
-                        # Draw highlighted edges
-                        if highlighted_edges:
-                            nx.draw_networkx_edges(G, pos, edgelist=highlighted_edges, 
-                                                 edge_color=self.route_colors[route], 
-                                                 width=4, alpha=1.0)
-                    else:
-                        nx.draw_networkx_edges(G, pos, edgelist=edges, 
-                                             edge_color=self.route_colors[route], 
-                                             width=2, alpha=0.7)
-            
-            # Draw nodes with different colors for highlights
-            if highlight_path:
-                # Normal nodes
-                normal_nodes = [n for n in G.nodes if n not in highlight_path]
-                if normal_nodes:
-                    nx.draw_networkx_nodes(G, pos, nodelist=normal_nodes, 
-                                         node_color='lightblue', 
-                                         node_size=300, alpha=0.8)
+
+            for (halte1_id, halte2_id), route in edge_routes.items():
+                halte1 = self.halte_dict[halte1_id]
+                halte2 = self.halte_dict[halte2_id]
+                coords = [[halte1["lat"], halte1["lon"]], [halte2["lat"], halte2["lon"]]]
+                is_highlighted = False
+                if highlight_path:
+                    path_edges = [(highlight_path[i], highlight_path[i+1]) for i in range(len(highlight_path)-1)]
+                    path_edges += [(v, u) for u, v in path_edges]
+                    if (halte1_id, halte2_id) in path_edges or (halte2_id, halte1_id) in path_edges:
+                        is_highlighted = True
                 
-                # Highlighted nodes
-                if len(highlight_path) > 0:
-                    # Start node (green)
-                    nx.draw_networkx_nodes(G, pos, nodelist=[highlight_path[0]], 
-                                         node_color='lightgreen', 
-                                         node_size=500, alpha=1.0)
-                    
-                    # End node (red)
-                    if len(highlight_path) > 1:
-                        nx.draw_networkx_nodes(G, pos, nodelist=[highlight_path[-1]], 
-                                             node_color='lightcoral', 
-                                             node_size=500, alpha=1.0)
-                    
-                    # Intermediate nodes (yellow)
-                    if len(highlight_path) > 2:
-                        nx.draw_networkx_nodes(G, pos, nodelist=highlight_path[1:-1], 
-                                             node_color='lightyellow', 
-                                             node_size=400, alpha=1.0)
-            else:
-                nx.draw_networkx_nodes(G, pos, node_color='lightblue', 
-                                     node_size=300, alpha=0.8)
-            
-            # Add node labels with better positioning
-            labels = {node: data['label'].replace(' ', '\n') if len(data['label']) > 15 
-                     else data['label'] for node, data in G.nodes(data=True)}
-            nx.draw_networkx_labels(G, pos, labels=labels, font_size=8, 
-                                  font_weight='bold', bbox=dict(boxstyle="round,pad=0.2", 
-                                  facecolor="white", alpha=0.8))
-            
-            # Create legend for routes
-            legend_elements = []
+                folium.PolyLine(
+                    locations=coords,
+                    color=self.route_colors.get(route, '#3388ff') if not is_highlighted else '#FF0000',
+                    weight=6 if is_highlighted else 3,
+                    opacity=1.0 if is_highlighted else 0.5,
+                    popup=f"Rute {route}",
+                    tooltip=f"Rute {route}"
+                ).add_to(m)
+
+            # Add tourist attractions as different markers
+            for wisata in self.wisata_data:
+                popup_text = f"<b>{wisata['name']}</b><br>Jam: {wisata['hours']}<br>Biaya: {wisata['cost']}"
+                folium.CircleMarker(
+                    location=[wisata["lat"], wisata["lon"]],
+                    radius=5,
+                    color='purple',
+                    fill=True,
+                    fill_color='purple',
+                    fill_opacity=0.6,
+                    popup=folium.Popup(popup_text, max_width=250),
+                    tooltip=wisata["name"]
+                ).add_to(m)
+
+            # Add legend (custom HTML)
+            legend_html = """
+            <div style="position: fixed; bottom: 50px; left: 50px; z-index: 1000; background-color: white; 
+                        padding: 10px; border: 2px solid gray; border-radius: 5px; font-size: 12px;">
+                <b>Legenda Rute</b><br>
+            """
             for route, color in self.route_colors.items():
                 if any(route in halte["routes"] for halte in self.halte_data):
-                    legend_elements.append(plt.Line2D([0], [0], color=color, lw=3, label=f'Rute {route}'))
-            
-            plt.legend(handles=legend_elements, loc='upper left', bbox_to_anchor=(0, 1))
-            
-            # Set title based on context
-            if highlight_path:
-                title = f"Jaringan Bus Solo Trans - Rute Terpilih {title_suffix}"
-                plt.suptitle(title, fontsize=16, fontweight='bold')
-                plt.title(f"Dari: {self.halte_dict[highlight_path[0]]['name']} → Ke: {self.halte_dict[highlight_path[-1]]['name']}", 
-                         fontsize=12, pad=20)
-            else:
-                title = f"Jaringan Rute Bus Solo Trans (BST) {title_suffix}"
-                plt.title(title, fontsize=16, fontweight='bold', pad=20)
-            
-            plt.axis('equal')
-            plt.axis('off')
-            plt.tight_layout()
-            
-            # Try to show the plot
-            try:
-                plt.show(block=False)
-                plt.pause(0.1)  # Small pause to ensure plot is displayed
-            except Exception as e:
-                print(f"⚠ Tidak dapat menampilkan grafik secara interaktif: {e}")
-                output_file = f"route_graph_{title_suffix.replace(' ', '_').lower()}.png"
-                plt.savefig(output_file, dpi=300, bbox_inches='tight')
-                print(f"✅ Grafik telah disimpan sebagai '{output_file}' di direktori saat ini.")
-        
+                    legend_html += f'<i style="background:{color};width:20px;height:3px;display:inline-block;"></i> Rute {route}<br>'
+            legend_html += """
+                <br><b>Simbol</b><br>
+                <i class="fa fa-bus" style="color:blue"></i> Halte<br>
+                <i class="fa fa-bus" style="color:green"></i> Halte Awal<br>
+                <i class="fa fa-bus" style="color:red"></i> Halte Akhir<br>
+                <i class="fa fa-bus" style="color:orange"></i> Halte Perantara<br>
+                <i style="background:purple;border-radius:50%;width:10px;height:10px;display:inline-block;"></i> Tempat Wisata
+            </div>
+            """
+            m.get_root().html.add_child(folium.Element(legend_html))
+
+            # Save the map as index.html
+            output_file = "index.html"
+            m.save(output_file)
+            print(f"✅ Peta interaktif telah disimpan sebagai '{output_file}'")
+            print("Peta akan otomatis terbuka di browser Anda.")
+
+            # Open the map in the default browser
+            webbrowser.open('file://' + os.path.realpath(output_file))
+
         except Exception as e:
-            print(f"❌ Error saat membuat visualisasi grafik: {e}")
+            print(f"❌ Error saat membuat peta interaktif: {e}")
             import traceback
             traceback.print_exc()
-    
+
     def heuristic(self, halte1_id: str, halte2_id: str) -> float:
-        """Heuristic function: straight-line distance between two haltes"""
         halte1 = self.halte_dict[halte1_id]
         halte2 = self.halte_dict[halte2_id]
         return haversine(halte1["lat"], halte1["lon"], halte2["lat"], halte2["lon"])
-    
+
     def a_star(self, start_id: str, goal_id: str) -> Optional[Dict]:
-        """A* pathfinding algorithm to find optimal route"""
         if start_id not in self.halte_dict or goal_id not in self.halte_dict:
             return None
         if start_id == goal_id:
@@ -324,10 +283,9 @@ class BusRouteSystem:
                     heapq.heappush(open_set, neighbor_node)
                     open_set_dict[neighbor_id] = tentative_g_score
         
-        return None  # No path found
-    
+        return None
+
     def _reconstruct_path(self, came_from: Dict, start_id: str, goal_id: str, total_distance: float) -> Dict:
-        """Reconstruct the optimal path from A* results"""
         path = []
         routes = []
         current = goal_id
@@ -351,13 +309,11 @@ class BusRouteSystem:
                 self.halte_dict[p]["lat"], self.halte_dict[p]["lon"])) for p in path[1:]]],
             "transfers": transfers
         }
-    
+
     def find_route(self, start_id: str, end_id: str) -> Optional[Dict]:
-        """Find optimal route between two haltes using A*"""
         return self.a_star(start_id, end_id)
-    
+
     def find_nearest_wisata(self, halte_id: str) -> Optional[Tuple[str, str, float]]:
-        """Find the nearest tourist attraction to a given halte"""
         if halte_id not in self.halte_dict:
             return None
         halte = self.halte_dict[halte_id]
@@ -371,9 +327,8 @@ class BusRouteSystem:
                 nearest_wisata = wisata["name"]
                 nearest_wisata_id = wisata["id"]
         return nearest_wisata_id, nearest_wisata, min_distance
-    
+
     def get_route_to_attraction(self, start_id: str, attraction_name: str) -> Optional[Dict]:
-        """Find route to a specific tourist attraction"""
         attraction = next((w for w in self.wisata_data if w["name"].lower() == attraction_name.lower()), None)
         if not attraction:
             return None
@@ -395,9 +350,8 @@ class BusRouteSystem:
             route_result["attraction_hours"] = attraction["hours"]
             route_result["attraction_cost"] = attraction["cost"]
         return route_result
-    
+
     def get_attractions_along_route(self, path: List[str], radius_km: float = 1.0) -> List[Dict]:
-        """Find tourist attractions along the route within specified radius"""
         attractions_found = []
         for halte_id in path:
             halte = self.halte_dict[halte_id]
@@ -417,9 +371,8 @@ class BusRouteSystem:
         seen = set()
         unique_attractions = [attr for attr in attractions_found if not (attr["attraction_id"] in seen or seen.add(attr["attraction_id"]))]
         return sorted(unique_attractions, key=lambda x: x["distance_km"])
-    
+
     def get_route_analysis(self, route_result: Dict) -> Dict:
-        """Analyze route and provide recommendations"""
         if not route_result:
             return {}
         analysis = {
@@ -466,7 +419,6 @@ class BusRouteSystem:
         return analysis
 
 def display_halte_list(bus_system):
-    """Display all available haltes"""
     print("\n=== DAFTAR HALTE TERSEDIA ===")
     print("=" * 60)
     for halte in sorted(bus_system.halte_data, key=lambda x: x["id"]):
@@ -474,7 +426,6 @@ def display_halte_list(bus_system):
         print(f"{halte['id']}: {halte['name']} (Rute: {routes_str})")
 
 def display_attraction_list(bus_system):
-    """Display all available tourist attractions"""
     print("\n=== DAFTAR TEMPAT WISATA ===")
     print("=" * 60)
     for wisata in sorted(bus_system.wisata_data, key=lambda x: x["id"]):
@@ -484,16 +435,18 @@ def display_attraction_list(bus_system):
         print(f"  Biaya Masuk: {wisata['cost']}")
 
 def search_halte(bus_system, query):
-    """Search for halte by name or ID"""
     query = query.lower()
     return [halte for halte in bus_system.halte_data if query in halte["id"].lower() or query in halte["name"].lower()]
 
 def interactive_route_planner():
-    """Interactive route planning system"""
     bus_system = BusRouteSystem()
     
     print("🚌 === SISTEM PERENCANAAN RUTE BUS SOLO === 🚌")
     print("Menggunakan Algoritma A* untuk rute optimal\n")
+    
+    # Display initial map on program start
+    print("📊 Menampilkan jaringan rute Bus Solo Trans di index.html...")
+    bus_system.visualize_route_graph()
     
     while True:
         print("\n" + "="*60)
@@ -596,9 +549,8 @@ def interactive_route_planner():
                         print(f"    Jam Operasional: {attr['hours']}")
                         print(f"    Biaya Masuk: {attr['cost']}")
                 
-                # Visualize the selected route
-                print("\n📊 Menampilkan visualisasi rute terpilih...")
-                bus_system.visualize_route_graph(highlight_path=result['path'], title_suffix=f"- Dari {result['path_names'][0]} ke {result['path_names'][-1]}")
+                print("\n📊 Menampilkan visualisasi rute terpilih di index.html...")
+                bus_system.visualize_route_graph(highlight_path=result['path'], title_suffix=f"Dari_{result['path_names'][0]}_ke_{result['path_names'][-1]}")
             else:
                 print("❌ Tidak ada rute yang ditemukan!")
         
@@ -661,9 +613,8 @@ def interactive_route_planner():
                 print(f"Total Biaya Transportasi: Rp {total_cost:,}")
                 print(f"Total Waktu: ~{total_time:.0f} menit")
                 
-                # Visualize the selected route
-                print("\n📊 Menampilkan visualisasi rute terpilih...")
-                bus_system.visualize_route_graph(highlight_path=result['path'], title_suffix=f"- Ke {result['destination_attraction']}")
+                print("\n📊 Menampilkan visualisasi rute terpilih di index.html...")
+                bus_system.visualize_route_graph(highlight_path=result['path'], title_suffix=f"Ke_{result['destination_attraction']}")
             else:
                 print("❌ Rute ke tempat wisata tidak ditemukan!")
         
@@ -689,7 +640,7 @@ def interactive_route_planner():
         elif choice == "6":
             print("\n📊 VISUALISASI JARINGAN RUTE")
             print("-" * 40)
-            print("Menampilkan jaringan rute Bus Solo Trans...")
+            print("Menampilkan jaringan rute Bus Solo Trans di index.html...")
             bus_system.visualize_route_graph()
         
         else:
