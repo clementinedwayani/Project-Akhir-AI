@@ -1,78 +1,49 @@
+<!-- templates/base.html -->
 <!DOCTYPE html>
-<lang="en">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Index{% endblock %}</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-    <script>
-        mermaid.initialize({ startOnLoad: true });
-    </script>
-    <script>
-        tailwind.config = {
-          theme: {
-            extend: {
-                colors: {
-                    cloud: '#dfe4e5',
-                    orange: '#f78837',
-                    charcoal: {
-                        lighter: '#3D5A66',
-                        DEFAULT: '#243037',
-                        darker: '#0F1A1F',
-                    },
-                    aqua: '#075056',
-                },
-            }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Pemilihan Objek Wisata{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pink: '#ffb3f8',
+            grey: '#f5f5f5',
+            sand: '#e9d8a6',
+            coral: '#000000',
+            deeplilac: '#a3a4f6',
+            deepblue: '#001F3F',
+            cloud: '#f8f9fa',
+            charcoal: '#333333',
+            orange: '#FFA500',
           }
         }
-      </script>
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
 </head>
-<body class="bg-charcoal min-h-screen">
-    <nav class="bg-charcoal text-cloud p-9 shadow-lg">
-        <div class="container mx-auto flex justify-between items-center flex-wrap">
-            <a href="/" class="hover:text-orange transition duration-500 ease-in-out
-            transition duration-500 ease-in-out text-xl font-bold">
-                Pemilihan Objek Wisata yang Dilalui BST
-            </a>
-    
-            <button id="mobile-menu-button" class="md:hidden focus:outline-none focus:ring-2 focus:ring-charcoal">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M4 6h16M4 12h16m-7 6h7"></path>
-                </svg>
-            </button>
-    
-            <div id="navigation-links" class="hidden md:flex flex-col md:flex-row w-full md:w-auto mt-4 md:mt-0 space-y-2 md:space-y-0 md:space-x-6">
-                <div>
-                    <a href="/" class="hover:text-orange text-lg font-medium transition duration-500 ease-in-out text-center">
-                        Beranda
-                    </a>
-                </div>
-                <div>
-                    <a href="/tentang" class="hover:text-orange text-lg font-medium transition duration-500 ease-in-out text-center">
-                        Tentang
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
-    <main class="px-4 lg:px-2">
-        {% block content %}
-        {% endblock %}    
-    </main> 
-
-    <br><br><br>
-    <script>
-        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-        document.addEventListener('DOMContentLoaded', () => {
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const navigationLinks = document.getElementById('navigation-links');
-            mobileMenuButton.addEventListener('click', () => {
-                navigationLinks.classList.toggle('hidden');
-            });
-        });
-    </script>
+<body class="bg-grey min-h-screen text-deepblue">
+  <nav class="bg-deeplilac text-white p-6 shadow-lg">
+    <div class="container mx-auto flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Pemilihan Objek Wisata yang Dilalui BST</h1>
+      <div class="space-x-4">
+        <a href="/beranda" class="hover:text-black transition">Beranda</a>
+        <a href="/tentang" class="hover:text-black transition">Tentang</a>
+      </div>
+    </div>
+  </nav>
+  
+  {% block content %}
+  {% endblock %}
 </body>
 </html>
