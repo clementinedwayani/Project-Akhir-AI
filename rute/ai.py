@@ -7,7 +7,6 @@ from dataclasses import dataclass, field
 import os
 import webbrowser
 
-# [Haversine dan calculate_travel_time tetap sama seperti kode asli]
 def haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     R = 6371.0  # Earth's radius in kilometers
     lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
@@ -38,36 +37,35 @@ class Node:
 
 class BusRouteSystem:
     def __init__(self):
-        # [halte_data dan wisata_data tetap sama seperti kode asli]
         self.halte_data = [
-            {"id": "H01", "name": "Jurug (Solo Safari)", "lat": -7.56513474408024, "lon": 110.858685876169, "routes": ["K1", "FD2"]},
-            {"id": "H02", "name": "UNS", "lat": -7.56455236195493, "lon": 110.8561722718, "routes": ["K1"]},
-            {"id": "H03", "name": "Vastenburg", "lat": -7.57175743180982, "lon": 110.8297470581, "routes": ["K1"]},
-            {"id": "H04", "name": "Gladag", "lat": -7.57203341152584, "lon": 110.827739168751, "routes": ["K1"]},
-            {"id": "H05", "name": "Pasar Pon Selatan", "lat": -7.57053451729552, "lon": 110.822770250784, "routes": ["K1"]},
-            {"id": "H06", "name": "Sriwedari 1 Selatan", "lat": -7.56729936753916, "lon": 110.812057143543, "routes": ["K1", "FD8"]},
-            {"id": "H07", "name": "Sriwedari 2 Selatan", "lat": -7.56795480396892, "lon": 110.814320671231, "routes": ["K1", "FD8"]},
-            {"id": "H08", "name": "Colomadu Utara", "lat": -7.53253942382143, "lon": 110.748923594566, "routes": ["K1"]},
+            {"id": "H01", "name": "Jurug (Solo Safari)", "lat": -7.56513474408024, "lon": 110.858685876169, "routes": ["K1", "FD2", "FD10", "K4"]},
+            {"id": "H02", "name": "UNS", "lat": -7.56455236195493, "lon": 110.8561722718, "routes": ["K1", "FD2"]},
+            {"id": "H03", "name": "Vastenburg", "lat": -7.57175743180982, "lon": 110.8297470581, "routes": ["K1", "K3", "FD7", "FD10"]},
+            {"id": "H04", "name": "Gladag", "lat": -7.57203341152584, "lon": 110.827739168751, "routes": ["K1", "K3"]},
+            {"id": "H05", "name": "Pasar Pon Selatan", "lat": -7.57053451729552, "lon": 110.822770250784, "routes": ["K1", "K5"]},
+            {"id": "H06", "name": "Sriwedari 1 Selatan", "lat": -7.56729936753916, "lon": 110.812057143543, "routes": ["K1", "FD8", "K5"]},
+            {"id": "H07", "name": "Sriwedari 2 Selatan", "lat": -7.56795480396892, "lon": 110.814320671231, "routes": ["K1", "FD8", "K5"]},
+            {"id": "H08", "name": "Colomadu Utara", "lat": -7.53253942382143, "lon": 110.748923594566, "routes": ["K4"]},
             {"id": "H09", "name": "Tugu Lilin", "lat": -7.567581219, "lon": 110.7835961, "routes": ["K3"]},
-            {"id": "H10", "name": "Vestenburg (Kantor Pos)", "lat": -7.57140133360988, "lon": 110.829647652826, "routes": ["K3"]},
-            {"id": "H11", "name": "Balai Kota", "lat": -7.56993057310902, "lon": 110.830046989632, "routes": ["K3", "FD2"]},
-            {"id": "H12", "name": "Pasar Gede", "lat": -7.5684698254206, "lon": 110.831727375632, "routes": ["K3"]},
-            {"id": "H13", "name": "Solo Techno Park", "lat": -7.55653679470118, "lon": 110.852209973442, "routes": ["K3"]},
-            {"id": "H14", "name": "Kantor Kecamatan Jebres", "lat": -7.55541900174376, "lon": 110.854977935521, "routes": ["K3"]},
-            {"id": "H15", "name": "Halte RS Jiwa / Taman Lansia", "lat": -7.55707042819373, "lon": 110.860610255225, "routes": ["K3"]},
+            {"id": "H10", "name": "Vestenburg (Kantor Pos)", "lat": -7.57140133360988, "lon": 110.829647652826, "routes": ["K1", "K3", "FD7", "FD10"]},
+            {"id": "H11", "name": "Balai Kota", "lat": -7.56993057310902, "lon": 110.830046989632, "routes": ["K1", "K3", "FD7", "FD10"]},
+            {"id": "H12", "name": "Pasar Gede", "lat": -7.5684698254206, "lon": 110.831727375632, "routes": ["K1", "K3", "FD7", "FD10"]},
+            {"id": "H13", "name": "Solo Techno Park", "lat": -7.55653679470118, "lon": 110.852209973442, "routes": ["K3", "K4"]},
+            {"id": "H14", "name": "Kantor Kecamatan Jebres", "lat": -7.55541900174376, "lon": 110.854977935521, "routes": ["K3", "K4"]},
+            {"id": "H15", "name": "Halte RS Jiwa / Taman Lansia", "lat": -7.55707042819373, "lon": 110.860610255225, "routes": ["K3", "K4"]},
             {"id": "H16", "name": "Halte Kecamatan Colomadu", "lat": -7.532634345, "lon": 110.7487969, "routes": ["K4"]},
-            {"id": "H17", "name": "Stadion Manahan", "lat": -7.556663684, "lon": 110.8048193, "routes": ["K4"]},
-            {"id": "H18", "name": "Terminal Tirtonadi", "lat": -7.551298569, "lon": 110.8182099, "routes": ["K4", "K6"]},
-            {"id": "H19", "name": "Ngapeman", "lat": -7.568500872, "lon": 110.8166443, "routes": ["K5", "FD8"]},
-            {"id": "H20", "name": "Sriwedari", "lat": -7.567047482, "lon": 110.8118452, "routes": ["K5"]},
-            {"id": "H21", "name": "Landasan Udara (Pasar Colomadu)", "lat": -7.53171343, "lon": 110.7473448, "routes": ["K5", "FD7"]},
-            {"id": "H22", "name": "Ngarsopuro", "lat": -7.569086355, "lon": 110.8221284, "routes": ["K6"]},
+            {"id": "H17", "name": "Stadion Manahan", "lat": -7.556663684, "lon": 110.8048193, "routes": ["K4", "K5"]},
+            {"id": "H18", "name": "Terminal Tirtonadi", "lat": -7.551298569, "lon": 110.8182099, "routes": ["FD11", "K4", "K6", "FD7"]},
+            {"id": "H19", "name": "Ngapeman", "lat": -7.568500872, "lon": 110.8166443, "routes": ["K1", "K5", "FD8"]},
+            {"id": "H20", "name": "Sriwedari", "lat": -7.567047482, "lon": 110.8118452, "routes": ["K1", "K5", "FD8"]},
+            {"id": "H21", "name": "Landasan Udara (Pasar Colomadu)", "lat": -7.53171343, "lon": 110.7473448, "routes": ["K1", "K5"]},
+            {"id": "H22", "name": "Ngarsopuro", "lat": -7.569086355, "lon": 110.8221284, "routes": ["FD9", "K6"]},
             {"id": "H23", "name": "Pasar Kembang", "lat": -7.571950677, "lon": 110.8166645, "routes": ["K6"]},
-            {"id": "H24", "name": "Sriwedari 2 Utara", "lat": -7.567852615, "lon": 110.8146095, "routes": ["FD2", "FD8"]},
+            {"id": "H24", "name": "Sriwedari 2 Utara", "lat": -7.567852615, "lon": 110.8146095, "routes": ["K1", "K5", "FD8", "FD11", "FD12"]},
             {"id": "H25", "name": "Museum Keris B", "lat": -7.568829291, "lon": 110.8106188, "routes": ["FD8"]},
             {"id": "H26", "name": "Mangkunegaran", "lat": -7.567624751, "lon": 110.8220978, "routes": ["FD9"]},
-            {"id": "H27", "name": "Sahid", "lat": -7.564166826, "lon": 110.8185673, "routes": ["FD8", "FD9"]},
-            {"id": "H28", "name": "Pasar Klewer", "lat": -7.575037806, "lon": 110.8264383, "routes": ["FD10"]},
+            {"id": "H27", "name": "Sahid", "lat": -7.564166826, "lon": 110.8185673, "routes": ["FD2", "FD8", "FD9"]},
+            {"id": "H28", "name": "Pasar Klewer", "lat": -7.575037806, "lon": 110.8264383, "routes": ["FD7", "FD11", "FD10", "FD12"]},
             {"id": "H29", "name": "Pasar Pucang Sawit A", "lat": -7.567996022, "lon": 110.8582507, "routes": ["FD10"]},
         ]
         

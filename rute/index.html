@@ -4,9 +4,7 @@
   <meta charset="utf-8">
   <title>Peta Rute Bus Solo Trans</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Link Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <!-- Link Leaflet Routing Machine CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
   <style>
     html, body {
@@ -84,9 +82,7 @@
   <div id="route-result"></div>
 </div>
 
-<!-- Link Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<!-- Link Leaflet Routing Machine JS -->
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
 <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 <script>
   const halte_data = [
@@ -177,73 +173,102 @@
     "FD10": ["H28", "H29"]
   };
 
-  const map = L.map('map').setView([-7.56, 110.82], 13);
+  // Inisialisasi peta
+  let map;
+  try {
+    map = L.map('map').setView([-7.56, 110.82], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 19
+    }).addTo(map);
+  } catch (e) {
+    console.error('Gagal menginisialisasi peta:', e);
+    alert('Gagal memuat peta. Periksa koneksi internet atau konsol browser untuk detail.');
+    return;
+  }
+
   let currentRouteControl = null;
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
-  }).addTo(map);
-
   // Tambahkan marker halte
-  halte_data.forEach(h => {
-    L.marker([h.lat, h.lon], {
-      icon: L.icon({
-        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34]
-      })
-    }).addTo(map)
-      .bindPopup(`<b>${h.name}</b><br>ID: ${h.id}<br>Rute: ${h.routes.join(", ")}`);
-  });
+  try {
+    halte_data.forEach(h => {
+      L.marker([h.lat, h.lon], {
+        icon: L.icon({
+          iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34]
+        })
+      }).addTo(map)
+        .bindPopup(`<b>${h.name}</b><br>ID: ${h.id}<br>Rute: ${h.routes.join(", ")}`);
+    });
+  } catch (e) {
+    console.error('Gagal menambahkan marker halte:', e);
+  }
 
   // Tambahkan marker tempat wisata
-  wisata_data.forEach(w => {
-    L.circleMarker([w.lat, w.lon], {
-      radius: 5,
-      color: 'purple',
-      fillColor: 'purple',
-      fillOpacity: 0.6
-    }).addTo(map)
-      .bindPopup(`<b>${w.name}</b><br>Jam: ${w.hours}<br>Biaya: ${w.cost}<br>Dekat Halte: ${w.halte.join(", ")}`);
-  });
+  try {
+    wisata_data.forEach(w => {
+      L.circleMarker([w.lat, w.lon], {
+        radius: 5,
+        color: 'purple',
+        fillColor: 'purple',
+        fillOpacity: 0.6
+      }).addTo(map)
+        .bindPopup(`<b>${w.name}</b><br>Jam: ${w.hours}<br>Biaya: ${w.cost}<br>Dekat Halte: ${w.halte.join(", ")}`);
+    });
+  } catch (e) {
+    console.error('Gagal menambahkan marker wisata:', e);
+  }
 
   // Tambahkan legenda
-  const legend = L.control({ position: 'bottomleft' });
-  legend.onAdd = function(map) {
-    const div = L.DomUtil.create('div', 'legend');
-    let legendContent = '<b>Legenda</b><br>';
-    for (const [route, color] of Object.entries(routeColors)) {
-      legendContent += `<div><span class="legend-color" style="background:${color}"></span>Rute ${route}</div>`;
-    }
-    legendContent += `<div><img src="https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png" width="15" height="25"> Halte</div>`;
-    legendContent += `<div><span style="background:purple;border-radius:50%;width:10px;height:10px;display:inline-block;"></span> Tempat Wisata</div>`;
-    div.innerHTML = legendContent;
-    return div;
-  };
-  legend.addTo(map);
+  try {
+    const legend = L.control({ position: 'bottomleft' });
+    legend.onAdd = function(map) {
+      const div = L.DomUtil.create('div', 'legend');
+      let legendContent = '<b>Legenda</b><br>';
+      for (const [route, color] of Object.entries(routeColors)) {
+        legendContent += `<div><span class="legend-color" style="background:${color}"></span>Rute ${route}</div>`;
+      }
+      legendContent += `<div><img src="https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png" width="15" height="25"> Halte</div>`;
+      legendContent += `<div><span style="background:purple;border-radius:50%;width:10px;height:10px;display:inline-block;"></span> Tempat Wisata</div>`;
+      div.innerHTML = legendContent;
+      return div;
+    };
+    legend.addTo(map);
+  } catch (e) {
+    console.error('Gagal menambahkan legenda:', e);
+  }
 
   // Isi dropdown halte
-  const startHalteSelect = document.getElementById('start-halte');
-  const endHalteSelect = document.getElementById('end-halte');
-  const startHalteWisataSelect = document.getElementById('start-halte-wisata');
-  halte_data.forEach(h => {
-    const option = document.createElement('option');
-    option.value = h.id;
-    option.text = `${h.id}: ${h.name}`;
-    startHalteSelect.appendChild(option.cloneNode(true));
-    endHalteSelect.appendChild(option.cloneNode(true));
-    startHalteWisataSelect.appendChild(option);
-  });
+  try {
+    const startHalteSelect = document.getElementById('start-halte');
+    const endHalteSelect = document.getElementById('end-halte');
+    const startHalteWisataSelect = document.getElementById('start-halte-wisata');
+    halte_data.forEach(h => {
+      const option = document.createElement('option');
+      option.value = h.id;
+      option.text = `${h.id}: ${h.name}`;
+      startHalteSelect.appendChild(option.cloneNode(true));
+      endHalteSelect.appendChild(option.cloneNode(true));
+      startHalteWisataSelect.appendChild(option);
+    });
+  } catch (e) {
+    console.error('Gagal mengisi dropdown halte:', e);
+  }
 
   // Isi dropdown wisata
-  const wisataSelect = document.getElementById('wisata');
-  wisata_data.forEach(w => {
-    const option = document.createElement('option');
-    option.value = w.name;
-    option.text = w.name;
-    wisataSelect.appendChild(option);
-  });
+  try {
+    const wisataSelect = document.getElementById('wisata');
+    wisata_data.forEach(w => {
+      const option = document.createElement('option');
+      option.value = w.name;
+      option.text = w.name;
+      wisataSelect.appendChild(option);
+    });
+  } catch (e) {
+    console.error('Gagal mengisi dropdown wisata:', e);
+  }
 
   // Fungsi untuk menghitung jarak Haversine
   function haversine(lat1, lon1, lat2, lon2) {
@@ -262,10 +287,13 @@
     return (distanceKm / speedKmh) * 60; // Konversi ke menit
   }
 
+  // GraphHopper API Key
+  const graphHopperApiKey = 'e5467566-8017-4c5b-bb25-b027ed59102d'; // Ganti dengan API key Anda
+
   // Fungsi untuk mencari rute antar halte
   function findRoute() {
-    const startId = startHalteSelect.value;
-    const endId = endHalteSelect.value;
+    const startId = document.getElementById('start-halte').value;
+    const endId = document.getElementById('end-halte').value;
     if (!startId || !endId) {
       alert("Pilih halte awal dan tujuan!");
       return;
@@ -275,7 +303,6 @@
       return;
     }
 
-    // Cari rute menggunakan OSRM
     const startHalte = halte_data.find(h => h.id === startId);
     const endHalte = halte_data.find(h => h.id === endId);
     const waypoints = [
@@ -293,8 +320,13 @@
         styles: [{ color: '#FF0000', weight: 4, opacity: 0.7 }]
       },
       createMarker: () => null,
-      router: L.Routing.osrmv1({
-        serviceUrl: 'https://router.project-osrm.org/route/v1'
+      router: L.Routing.graphHopper(graphHopperApiKey, {
+        urlParameters: {
+          profile: 'bus',
+          locale: 'id',
+          calc_points: true,
+          points_encoded: false
+        }
       }),
       addWaypoints: false,
       draggableWaypoints: false,
@@ -316,15 +348,15 @@
     })
     .on('routingerror', function(e) {
       console.error('Kesalahan routing:', e.error);
-      alert('Gagal memuat rute. Silakan cek konsol browser untuk detail.');
+      alert('Gagal memuat rute. Pastikan API key valid dan coba lagi.');
     })
     .addTo(map);
   }
 
   // Fungsi untuk mencari rute ke wisata
   function findRouteToWisata() {
-    const startId = startHalteWisataSelect.value;
-    const wisataName = wisataSelect.value;
+    const startId = document.getElementById('start-halte-wisata').value;
+    const wisataName = document.getElementById('wisata').value;
     if (!startId || !wisataName) {
       alert("Pilih halte awal dan tempat wisata!");
       return;
@@ -337,7 +369,6 @@
       return;
     }
 
-    // Cari halte terdekat ke wisata
     let bestHalteId = null;
     let minDistance = Infinity;
     wisata.halte.forEach(halteId => {
@@ -372,8 +403,13 @@
         styles: [{ color: '#FF0000', weight: 4, opacity: 0.7 }]
       },
       createMarker: () => null,
-      router: L.Routing.osrmv1({
-        serviceUrl: 'https://router.project-osrm.org/route/v1'
+      router: L.Routing.graphHopper(graphHopperApiKey, {
+        urlParameters: {
+          profile: 'bus',
+          locale: 'id',
+          calc_points: true,
+          points_encoded: false
+        }
       }),
       addWaypoints: false,
       draggableWaypoints: false,
@@ -399,7 +435,7 @@
     })
     .on('routingerror', function(e) {
       console.error('Kesalahan routing:', e.error);
-      alert('Gagal memuat rute. Silakan cek konsol browser untuk detail.');
+      alert('Gagal memuat rute. Pastikan API key valid dan coba lagi.');
     })
     .addTo(map);
   }
@@ -424,50 +460,70 @@
     document.getElementById('route-result').innerHTML = result;
   }
 
-  // Gambar rute trayek menggunakan OSRM
-  Object.entries(routeOrder).forEach(([route, halteIds]) => {
-    const waypoints = halteIds
-      .map(id => {
-        const halte = halte_data.find(h => h.id === id);
-        return halte ? [halte.lat, halte.lon] : null;
-      })
-      .filter(coord => coord !== null)
-      .map(coord => L.latLng(coord[0], coord[1]));
+  // Gambar trayek rute menggunakan GraphHopper
+  try {
+    Object.entries(routeOrder).forEach(([route, halteIds]) => {
+      const waypoints = halteIds
+        .map(id => {
+          const halte = halte_data.find(h => h.id === id);
+          if (!halte) {
+            console.warn(`Halte ${id} tidak ditemukan untuk rute ${route}`);
+            return null;
+          }
+          return L.latLng(halte.lat, halte.lon);
+        })
+        .filter(coord => coord !== null);
 
-    if (waypoints.length > 1) {
-      console.log(`Memproses rute ${route} dengan waypoints:`, waypoints);
-      L.Routing.control({
-        waypoints: waypoints,
-        lineOptions: {
-          styles: [{ color: routeColors[route] || "gray", weight: 4, opacity: 0.7 }]
-        },
-        createMarker: () => null,
-        router: L.Routing.osrmv1({
-          serviceUrl: 'https://router.project-osrm.org/route/v1'
-        }),
-        addWaypoints: false,
-        draggableWaypoints: false,
-        fitSelectedRoutes: false,
-        show: false
-      })
-      .on('routesfound', function(e) {
-        console.log(`Rute ${route} ditemukan:`, e.routes);
-        e.routes.forEach(r => {
-          L.polyline(r.coordinates, {
+      if (waypoints.length > 1) {
+        console.log(`Memproses rute ${route} dengan waypoints:`, waypoints);
+        L.Routing.control({
+          waypoints: waypoints,
+          lineOptions: {
+            styles: [{ color: routeColors[route] || "gray", weight: 4, opacity: 0.7 }]
+          },
+          createMarker: () => null,
+          router: L.Routing.graphHopper(graphHopperApiKey, {
+            urlParameters: {
+              profile: 'bus',
+              locale: 'id',
+              calc_points: true,
+              points_encoded: false
+            }
+          }),
+          addWaypoints: false,
+          draggableWaypoints: false,
+          fitSelectedRoutes: false,
+          show: false
+        })
+        .on('routesfound', function(e) {
+          console.log(`Rute ${route} ditemukan:`, e.routes);
+          e.routes.forEach(r => {
+            L.polyline(r.coordinates, {
+              color: routeColors[route] || "gray",
+              weight: 4,
+              opacity: 0.7
+            }).addTo(map).bindPopup(`Trayek: ${route}`);
+          });
+        })
+        .on('routingerror', function(e) {
+          console.error(`Kesalahan routing untuk ${route}:`, e.error);
+          // Fallback: Gambar garis lurus jika GraphHopper gagal
+          L.polyline(waypoints, {
             color: routeColors[route] || "gray",
             weight: 4,
-            opacity: 0.7
-          }).addTo(map).bindPopup(`Trayek: ${route}`);
-        });
-      })
-      .on('routingerror', function(e) {
-        console.error(`Kesalahan routing untuk ${route}:`, e.error);
-      })
-      .addTo(map);
-    } else {
-      console.warn(`Rute ${route} memiliki waypoints tidak cukup:`, waypoints);
-    }
-  });
+            opacity: 0.5,
+            dashArray: '10, 10'
+          }).addTo(map).bindPopup(`Trayek: ${route} (Fallback: Garis lurus)`);
+        })
+        .addTo(map);
+      } else {
+        console.warn(`Rute ${route} memiliki waypoints tidak cukup:`, waypoints);
+      }
+    });
+  } catch (e) {
+    console.error('Gagal menggambar trayek rute:', e);
+    alert('Gagal menggambar rute. Periksa konsol browser untuk detail.');
+  }
 </script>
 </body>
 </html>
